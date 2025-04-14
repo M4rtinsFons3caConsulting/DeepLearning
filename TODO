@@ -1,0 +1,18 @@
+# Preprocessing
+
+- Flatten the directory structure to conforme with flow from dataframe workflow.
+- Update the metadata.csv with the necessary elements from binary_labels, and the resulting flattening.
+- Build and implement the binary_labeller expansion with random background cropping to increase the collection of images with  non-animal labels.
+- Oversample the dataset ahead of time, using an aditional data augmentation step:
+    . 90º rotation, left and right;
+    . x-axis inversion;
+    . increase or decrease saturation;
+    . increase or decrease brightness;
+    . manipulate single channel hue;
+
+# Architecture
+- <Here the architectural deployment considerations>
+
+# Benchmarking
+
+- <Here the banchmarking procedure>
