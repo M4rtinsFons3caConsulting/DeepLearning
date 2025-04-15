@@ -13,4 +13,4 @@ Requires-Dist: keras==3.9.2
 Requires-Dist: matplotlib==3.10.1
 Dynamic: license-file
 
-# Stand in for ReadMe
+# README

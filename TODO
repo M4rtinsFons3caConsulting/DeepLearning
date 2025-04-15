@@ -1,15 +1,15 @@
 # Packaging
 
-- Create the packaging for utility functions using .toml architecture
+- Create the packaging for utility functions using .toml architecture #DONE
 
 # Preprocessing
 
-- Flatten the directory structure to conforme with flow from dataframe workflow;
+- Flatten the directory structure to conforme with flow from dataframe workflow; #DONE
 
-- Change file_names to metadata_tas <eol_content_id,eol_page_id>.jpg
+- Change file_names to metadata_tas <eol_content_id,eol_page_id>.jpg #DONE
 
-- Update the metadata.csv:
-    - with updated filenames
+- Update the metadata.csv: 
+    - with updated filenames #DONE
     - with binary_labels. 
 
 - Create a script to deduce the class imbalance in the difference labelling schema i.e. binary, multi-class;
