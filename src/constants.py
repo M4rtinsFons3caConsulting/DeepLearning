@@ -1,6 +1,7 @@
 """A constants file for environmental variables, such as root"""
 
-IMAGE_DIR = 'data' 
+ROOT_DIR = "data"
+IMAGE_DIR = 'data/image_directory' 
 METADATA_PATH = 'data/metadata.csv'
 DATA_DIR = 'data'
 

@@ -1,0 +1,23 @@
+[project]
+name = "deep_utils"
+version = "0.1.0"
+description = "A multi-class classification utilities package for our groups image recognition tasks."
+authors = [
+    {name = "Group 69 - MsC in Data Science @NovaIMS 2024/2025"}
+]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy==1.23.5",
+    "pandas==1.5.3",
+    "keras==3.9.2",
+    "matplotlib==3.10.1"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["src"]

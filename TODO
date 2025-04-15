@@ -1,18 +1,38 @@
+# Packaging
+
+- Create the packaging for utility functions using .toml architecture
+
 # Preprocessing
 
-- Flatten the directory structure to conforme with flow from dataframe workflow.
-- Update the metadata.csv with the necessary elements from binary_labels, and the resulting flattening.
+- Flatten the directory structure to conforme with flow from dataframe workflow;
+
+- Change file_names to metadata_tas <eol_content_id,eol_page_id>.jpg
+
+- Update the metadata.csv:
+    - with updated filenames
+    - with binary_labels. 
+
+- Create a script to deduce the class imbalance in the difference labelling schema i.e. binary, multi-class;
+
+- Create naming convention for scheduled transformations.
+
 - Build and implement the binary_labeller expansion with random background cropping to increase the collection of images with  non-animal labels.
-- Oversample the dataset ahead of time, using an aditional data augmentation step:
+
+- Update the metadata.csv with the resulting image lines;
+
+- Oversample the dataset ahead of time using, in accordance with the deduced class imbalances:
     . 90º rotation, left and right;
     . x-axis inversion;
     . increase or decrease saturation;
     . increase or decrease brightness;
     . manipulate single channel hue;
 
+    and, apply the aforementioned naming convention to the resulting images;
+
+- Update the metadata.csv with the resulting image lines;
+
 # Architecture
 - <Here the architectural deployment considerations>
 
 # Benchmarking
-
 - <Here the banchmarking procedure>
