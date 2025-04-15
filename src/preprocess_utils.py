@@ -1,6 +1,6 @@
 import keras
 import tensorflow as tf
-from constants import IMAGE_SIZE_STANDARD
+from _constants import IMAGE_SIZE_STANDARD
 
 def resize_image( 
     image: tf.Tensor,
