@@ -1,4 +1,4 @@
-""" Moves images to root
+""" Moves images to relative rood of image directory.
 
 Originally the data was stored using a hierarchy of directories with the following structure: 
     /<image_directory>/<family_fillum>/<eol_content_id>_<eol_eol_page_id>.jpg

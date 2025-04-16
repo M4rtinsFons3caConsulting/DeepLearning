@@ -13,17 +13,28 @@ Usage:
 # Imports
 import os
 import re
+import sys
 import random
 import argparse
 from typing import List, Tuple, Optional, Any
 
-# Third party
+# Third-party 
 import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow.keras.preprocessing import image  # type: ignore
 
 # Local source
 from constants import DATA_DIR, IMAGE_DIR
+
+TASKS_DICT = {
+      'binary' : 'is_animal'
+    , 'from_crop' : ' is_animal'
+} 
+
+
+def read_tasks_dict() -> str:
+    """ Small helper to parse dict arguments to help"""
+    return "; ".join(f"<{k} : {v}>" for k, v in TASKS_DICT.items())
 
 
 def _display_image(
@@ -160,15 +171,25 @@ def _get_index(
     labeled_frame = pd.read_csv(output_path)
 
     if not labeled_frame.empty:  # Ensure there are labeled items in the CSV
-        last_labeled_file = labeled_frame['filename'].iloc[-1]
-        try:
-            # Get the index of the last labeled file in the metadata
-            last_labeled_index = paths_list.index(last_labeled_file) + 1  # +1 to start from the next image
-            print(f"Resuming from {last_labeled_file}.")
-            return paths_list[last_labeled_index:]  # Slice to the remaining images
-        except ValueError:
-            print(f"Warning: Last labeled file '{last_labeled_file}' not found in metadata. Starting from the first image.")
-            return paths_list  # Start from the beginning if not found
+        try : 
+            last_labeled_file = labeled_frame['image_path'].iloc[-1]
+        except KeyError:
+            user_input = input(
+                "Warm start was detected, i.e. the desired output file is not empty, but was unnable to locate image_path column" \
+                + "provide a column_name (enter to exit)"
+            )
+            if user_input:
+                try:
+                    last_labeled_file = labeled_frame[user_input].iloc[-1]
+
+                except KeyError as e:
+                    raise(e)
+                
+        # Get the index of the last labeled file in the metadata
+        last_labeled_index = paths_list.index(last_labeled_file) + 1  # +1 to start from the next image
+        print(f"Resuming from {last_labeled_file}.")
+        return paths_list[last_labeled_index:]  # Slice to the remaining images
+    
     else:
         print("The labels CSV is empty. Starting from the first image.")
         return paths_list  # Start from the beginning if the CSV is empty
@@ -193,7 +214,7 @@ def _parse_labels(
     task = task.lower()
     if task not in ['binary', 'from_crop']:
         raise ValueError('Task not supported.')
-    
+
     metapath = os.path.join(DATA_DIR, 'metadata.csv')
     metaframe = pd.read_csv(metapath)
     paths_list = metaframe['file_path'].tolist()
@@ -204,6 +225,10 @@ def _parse_labels(
     # Check if the labels CSV exists and the task is 'binary'
     if os.path.exists(output_path) and task == 'binary':
         paths_list = _get_index(output_path, paths_list)  # Get the index and updated paths list
+
+    if not paths_list:
+        print("Unable to parse list of paths. Now Exiting")
+        sys.exit(-1)
 
     results = []
 
@@ -231,7 +256,7 @@ def _parse_labels(
                 filename = path
 
             # Append to the results
-            results.append({'filename': filename, 'label': label})
+            results.append({'image_path': filename, f'{TASKS_DICT[task]}': label})
 
     except KeyboardInterrupt:
         print("\n[Interrupted by user. Saving progress...]")
@@ -244,9 +269,21 @@ def _parse_labels(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='A manual labelling command line interface.')
-    parser.add_argument('--output_name', type=str, required=True, help='Name of the output CSV file')
-    parser.add_argument('--task', type=str, required=True, help='Labeling task description')
+    parser = argparse.ArgumentParser(
+        description='A lightweight multi-purpose, manual labelling command line interface assistant for computer vision preprocessing labelling tasks.'
+        )
+    
+    parser.add_argument(
+        '--output_name', 
+        type=str, required=True, 
+        help='Name of the desired output file without the extension)'
+    )
+    parser.add_argument(
+        '--task',
+        type=str,
+        required=True,
+        help=f"The labelling task's name. Available <task : label> are: {read_tasks_dict()}"
+    )
 
     args = parser.parse_args()
     _parse_labels(args.output_name, args.task)

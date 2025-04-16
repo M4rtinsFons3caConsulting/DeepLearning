@@ -1,5 +1,5 @@
 """
-_label_merger.py
+label_merger.py
 
 A utility script for merging manual label CSVs with image metadata.
 Designed for use in image classification workflows where manual labels
@@ -10,6 +10,7 @@ command line or reused as a callable function.
 """
 
 import os
+import sys
 import argparse
 import pandas as pd
 from typing import Literal
@@ -42,11 +43,12 @@ def _merge_labels(
     # Load metadata
     metapath = os.path.join(DATA_DIR, 'metadata.csv')
     metaframe = pd.read_csv(metapath)
-
+    
     # Load labels
     label_path = os.path.join(DATA_DIR, f'{csv_file}.csv')
-    labelframe = pd.read_csv(label_path, header=None, names=['filename', 'label'])
-
+    labelframe = pd.read_csv(label_path)
+    labelframe['label'] = labelframe['label'].astype('Int64')
+    
     # Merge
     merged = pd.merge(
         metaframe,
@@ -68,4 +70,39 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     merged_df = _merge_labels(**vars(args))
+
     print(merged_df.head())
+    user_input = input("Showing the resulting merge. Press 'y' to accept, any other key to cancel.").lower()
+
+    drop = False
+    if user_input == 'y':
+        if args.left_on == args.right_on:
+            merged_df.drop(
+                columns=[col for col in merged_df.columns if col.endswith('_y') and col != f"{args.right_on}_y"],
+                inplace=True
+            )
+        else:
+            user_input = \
+                input(
+                    "Merged on Key with distinct names" \
+                    ", enter 'l' to keep left" \
+                    ", enter 'r' to keep right, any other to keep both."
+                ).lower()
+            
+            if user_input:
+                drop = True
+    else:     
+        print('Failed to merge successfully. Now exiting the merger.')
+        sys.exit(-1)
+   
+    if drop:
+        if user_input == 'l':
+            merged_df.drop(columns=[args.right_on], inplace=True)
+        elif user_input == 'r': 
+            merged_df.drop(columns=[args.left_on], inplace=True)
+
+    final_path = os.path.join(DATA_DIR, 'metadata.csv')  
+    merged_df.to_csv(final_path, index=False)
+    print("Merged succesfully. Now exiting the merger.")
+
+
