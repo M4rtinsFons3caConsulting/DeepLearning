@@ -3,16 +3,17 @@
 Originally the data was stored using a hierarchy of directories with the following structure: 
     /<image_directory>/<family_fillum>/<eol_content_id>_<eol_eol_page_id>.jpg
 
-;and was kept in this projects /data directory where other data were stored such as metadata information and other labellings
-resulting from our preprocessment. Due to our decision to shift towards an architecture that made use of several models however,
-and depending those models on multiple labbelling schemas, we decided to change the image directory to a flat structure that
+;and was kept in this projects /data directory where other data were stored such as metadata 
+information and other labelings resulting from our preprocessment. Due to our decision to shift 
+towards an architecture that made use of several models however, and depending those models on 
+multiple labbelling schemas, we decided to change the image directory to a flat structure that 
 allows for image loading using the "flow_from_dataframe" paradigm. 
 
 """
 
 import os
 import shutil
-from _constants import IMAGE_DIR, DATA_DIR
+from constants import IMAGE_DIR, DATA_DIR
 
 
 def _flatten_image_directory(dir_path):

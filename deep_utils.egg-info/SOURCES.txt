@@ -7,8 +7,7 @@ deep_utils.egg-info/dependency_links.txt
 deep_utils.egg-info/requires.txt
 deep_utils.egg-info/top_level.txt
 src/__init__.py
-src/_binary_labeller.py
 src/_constants.py
 src/_flatten_dir.py
-src/display_utils.py
-src/preprocess_utils.py
+src/_labeller.py
+src/_update_metadata.py

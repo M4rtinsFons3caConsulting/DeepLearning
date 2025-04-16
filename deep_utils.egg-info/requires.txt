@@ -1,4 +1,9 @@
-numpy==1.23.5
-pandas==1.5.3
-keras==3.9.2
-matplotlib==3.10.1
+numpy
+pandas
+keras
+tensorflow
+types-tensorflow
+matplotlib
+optuna
+scikit-learn
+opencv-python
