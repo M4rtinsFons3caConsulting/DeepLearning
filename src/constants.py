@@ -1,4 +1,4 @@
-"""A constants file for environmental variables, such as root"""
+"""A constants file for environmental variables, such as root. Used mostly to import connstant, but can also store values."""
 
 ROOT = "."
 DATA_DIR = '../data'
@@ -10,5 +10,3 @@ IMAGE_SIZE_STANDARD = {
     'VGG19' :  [224, 224],
     'Resnet50' : [224, 224]
 }
-
-

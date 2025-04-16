@@ -16,6 +16,9 @@ pip install .
 # Feching the data
 <CODE TO GET THE DATA INTO /DATA/`IMAGE DIRECTORY` AND METADATA TO /DATA>
 
+# Go to /src
+cd src
+
 # Setting up the directory structure
 python dir_flattener.py
 

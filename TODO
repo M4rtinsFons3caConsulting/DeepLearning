@@ -10,7 +10,7 @@
 
 - Update the metadata.csv: 
     - with updated filenames #DONE
-    - with binary_labels. 
+    - with binary_labels.    #DONE
 
 - Create a script to deduce the class imbalance in the difference labelling schema i.e. binary, multi-class;
 
