@@ -155,6 +155,7 @@ def _get_label(
       
         # Is continue request
         if user_input == '9': # Return None
+            _image_display(None, show=False) # Close previous image before opening the new one
             return 'SKIP', None  
             
         # Otherwise user input is invalid
@@ -214,7 +215,7 @@ def _parse_labels(
         raise ValueError("Invalid output_name")
 
     # Load the data
-    metapath = os.path.join(DATA_DIR, 'metadata.csv')
+    metapath = os.path.join('../', DATA_DIR, 'metadata.csv')
     metaframe = pd.read_csv(metapath)
 
     # Get the file keys
@@ -223,7 +224,7 @@ def _parse_labels(
     metadata_paths = metadaframe_slice['file_path'].tolist()
     
     # Use output name to construct the path to the labels CSV
-    output_path = os.path.join(DATA_DIR, f'{output_name}.csv')
+    output_path = os.path.join('../', DATA_DIR, f'{output_name}.csv')
 
     # Check if the output CSV exists, and is non-empty
     if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
@@ -242,7 +243,7 @@ def _parse_labels(
 
     try:
         for path in remaining_paths_list:
-            img_path = os.path.join(IMAGE_DIR, path)
+            img_path = os.path.join('../', IMAGE_DIR, path)
             label, cropped_img = _get_label(img_path)
 
             if label is None:
@@ -251,7 +252,7 @@ def _parse_labels(
             if label == 0 and cropped_img is not None:
                 base, ext = os.path.splitext(path)
                 new_filename = f"{base}_noanimalcrop{ext}"
-                save_path = os.path.join(IMAGE_DIR, new_filename)
+                save_path = os.path.join('../', IMAGE_DIR, new_filename)
 
                 crops_to_save.append((cropped_img, save_path))
 
@@ -260,6 +261,9 @@ def _parse_labels(
                     'image_path': new_filename,
                     'is_animal': label
                 })
+
+            if label == 'SKIP':
+                continue
 
     except KeyboardInterrupt:
         print("\n[Interrupted by user. Saving progress...]")
@@ -270,7 +274,13 @@ def _parse_labels(
             print(f"[Saved crop to {save_path}]")
 
         if results:
-            pd.DataFrame(results).to_csv(output_path, index=False)
+            # Check if the output CSV exists, and is non-empty
+            if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
+                headers = True
+            else:
+                headers = False
+                
+            pd.DataFrame(results).to_csv(output_path, mode='a', index=False, header=headers)
             print(f"[Saved {len(results)} labels to {output_path}]")
         else:
             print("[No labels to save.]")
@@ -278,7 +288,7 @@ def _parse_labels(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='A crop labelling assistant'
-        )
+    )
     
     parser.add_argument(
         '--output_name', 
