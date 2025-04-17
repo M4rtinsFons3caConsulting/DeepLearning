@@ -11,7 +11,7 @@
 conda activate # <directory name>
 
 # Install src package to local directory
-pip install .
+pip install -e . 
 
 # Feching the data
 <CODE TO GET THE DATA INTO /DATA/`IMAGE DIRECTORY` AND METADATA TO /DATA>

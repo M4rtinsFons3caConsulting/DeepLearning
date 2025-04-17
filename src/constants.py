@@ -4,9 +4,6 @@ ROOT = "."
 DATA_DIR = '../data'
 IMAGE_DIR = '../data/image_directory'
 
-
-IMAGE_SIZE_STANDARD = {
-    'VGG16' :  (224, 224),
-    'VGG19' :  [224, 224],
-    'Resnet50' : [224, 224]
+REGEX_REF = {
+    'crop': r'_noanimalcrop'
 }

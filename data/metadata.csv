@@ -1,4 +1,4 @@
-rare_species_id,phylum,family,file_path,label 
+rare_species_id,phylum,family,file_path,is_animal
 75fd91cb-2881-41cd-88e6-de451e8b60e2,mollusca,unionidae,12853737_449393.jpg,1
 28c508bc-63ff-4e60-9c8f-1934367e1528,chordata,geoemydidae,20969394_793083.jpg,1
 00372441-588c-4af8-9665-29bee20822c0,chordata,cryptobranchidae,28895411_319982.jpg,1
