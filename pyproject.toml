@@ -1,5 +1,5 @@
 [project]
-name = "deep_utils"
+name = "deep"
 version = "0.1.0"
 description = "A multi-class classification utilities package for our groups image recognition tasks."
 authors = [
@@ -25,4 +25,4 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["src"]
+include = ["deep"]
