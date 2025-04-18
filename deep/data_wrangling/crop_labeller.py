@@ -134,11 +134,11 @@ def _get_label(
             _image_display(None, show=False) # Close image after input
             return None, None    
          
-        if user_input == '0': # Return Result
+        elif user_input == '0': # Return Result
             _image_display(None, show=False) # Close previous image after valid input
             return int(user_input), cropped_img
         
-        if user_input == '1': # Try again
+        elif user_input == '1': # Try again
             # Get new crop
             while True:
                 try:
@@ -154,12 +154,13 @@ def _get_label(
             _image_display(None, show=False) # Close previous image before opening the new one
       
         # Is continue request
-        if user_input == '9': # Return None
+        elif user_input == '9': # Return None
             _image_display(None, show=False) # Close previous image before opening the new one
             return 'SKIP', None  
-            
-        # Otherwise user input is invalid
-        print("Invalid input. Try again.") 
+
+        else:  
+            # Otherwise user input is invalid
+            print("Invalid input. Try again.") 
     
 
 def _get_index(
@@ -229,8 +230,10 @@ def _parse_labels(
     # Check if the output CSV exists, and is non-empty
     if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
         remaining_paths_list = metadata_paths
+        headers = True
     else:
         remaining_paths_list = _get_index(output_path, metadata_paths) 
+        headers = False
     
     # Fail safe
     if not remaining_paths_list:
@@ -274,7 +277,7 @@ def _parse_labels(
             print(f"[Saved crop to {save_path}]")
 
         if results:
-            pd.DataFrame(results).to_csv(output_path, mode='a', index=False)
+            pd.DataFrame(results).to_csv(output_path, mode='a', index=False, header=headers)
             print(f"[Saved {len(results)} labels to {output_path}]")
         else:
             print("[No labels to save.]")

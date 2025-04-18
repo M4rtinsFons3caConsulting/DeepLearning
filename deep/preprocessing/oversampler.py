@@ -33,7 +33,7 @@ from deep.constants import IMAGE_DIR, DATA_DIR
 
 TRANSFORM_GENERATORS: Dict[str, ImageDataGenerator] = {
     "_flip_lr": ImageDataGenerator(horizontal_flip=True),  # Horizontal flip
-    "_flip_tb": ImageDataGenerator(vertical_flip=True),  # Vertical flip
+    # "_flip_tb": ImageDataGenerator(vertical_flip=True),  # Vertical flip
     "_rotate_20": ImageDataGenerator(rotation_range=20),  # Rotate image by 10 degrees
     "_rotate_45": ImageDataGenerator(rotation_range=45),  # Rotate image by 25 degrees
     "_bright_plus": ImageDataGenerator(preprocessing_function=lambda x: x * 1.30),  # Increase brightness by 15%
