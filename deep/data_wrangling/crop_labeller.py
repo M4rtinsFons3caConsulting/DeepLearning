@@ -274,17 +274,7 @@ def _parse_labels(
             print(f"[Saved crop to {save_path}]")
 
         if results:
-<<<<<<< HEAD
-            # Check if the output CSV exists, and is non-empty
-            if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
-                headers = True
-            else:
-                headers = False
-                
-            pd.DataFrame(results).to_csv(output_path, mode='a', index=False, header=headers)
-=======
             pd.DataFrame(results).to_csv(output_path, mode='a', index=False)
->>>>>>> 0da8df9 (Oversampler complete, regex patterns for delete added; run it)
             print(f"[Saved {len(results)} labels to {output_path}]")
         else:
             print("[No labels to save.]")
