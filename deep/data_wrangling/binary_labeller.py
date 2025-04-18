@@ -173,7 +173,7 @@ def _parse_labels(
 
     finally: # Ensure results are always stored.
         if results:
-            pd.DataFrame(results).to_csv(output_path, index=False)
+            pd.DataFrame(results).to_csv(output_path, mode='a', index=False)
             print(f"[Saved {len(results)} labels to {output_path}]")
         else:
             print("[No labels to save.]")

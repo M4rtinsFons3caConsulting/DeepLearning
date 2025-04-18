@@ -17,7 +17,9 @@ dependencies = [
     "matplotlib",
     "optuna",
     "scikit-learn",
-    "opencv-python"
+    "opencv-python",
+    "ipykernel",
+    "focal-loss"
 ]
 
 [build-system]

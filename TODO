@@ -29,7 +29,7 @@
 
     and, apply the aforementioned naming convention to the resulting images;
 
-- Update the metadata.csv with the resulting image lines;
+- Create a function to read from an auxiliary metadata file, and return a random
 
 # Architecture
 - <Here the architectural deployment considerations>
