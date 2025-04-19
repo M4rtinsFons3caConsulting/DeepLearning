@@ -1,4 +1,4 @@
-rare_species_id,image_path,is_animal
+rare_species_id,file_path,is_animal
 28c508bc-63ff-4e60-9c8f-1934367e1528,20969394_793083_noanimalcrop.jpg,0
 00372441-588c-4af8-9665-29bee20822c0,28895411_319982_noanimalcrop.jpg,0
 29cc6040-6af2-49ee-86ec-ab7d89793828,29658536_45510188_noanimalcrop.jpg,0
@@ -1382,3 +1382,5 @@ cae00f07-eec6-4b3a-b0f3-0ac77baad949,22888454_45509933_noanimalcrop.jpg,0
 b3f1183e-8699-4c3a-a59a-bfa63a666f98,21754959_4453261_noanimalcrop.jpg,0
 9579e68b-7d49-4f94-abd0-e1e2cf01b07b,21756537_46559441_noanimalcrop.jpg,0
 7f947a5d-5ee9-4f6d-8bfc-76f83a8b5e3b,21286856_46559300_noanimalcrop.jpg,0
+b7b529b1-bfed-4280-b844-92513718352b,20547029_328497_noanimalcrop.jpg,0
+bc3c37c6-d515-4531-b800-27bcd82e803a,28274715_45276283_noanimalcrop.jpg,0

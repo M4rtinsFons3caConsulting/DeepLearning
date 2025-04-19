@@ -181,12 +181,12 @@ def _get_index(
     # Read the CSV with the previously labeled data
     labeled_frame = pd.read_csv(output_path)
 
-    # Ensure the 'image_path' column exists in the labeled_frame
-    if 'image_path' not in labeled_frame.columns:
-        raise KeyError("'image_path' column not found in the labels CSV.")
+    # Ensure the 'file_path' column exists in the labeled_frame
+    if 'file_path' not in labeled_frame.columns:
+        raise KeyError("'file_path' column not found in the labels CSV.")
     
     # Get the last labeled file from the CSV
-    last_labeled_file = labeled_frame['image_path'].iloc[-1]
+    last_labeled_file = labeled_frame['file_path'].iloc[-1]
 
     # Remove _noanimalcrop if present from the filename (to match original filename)
     last_labeled_file_base = last_labeled_file.replace('_noanimalcrop', '')
@@ -261,7 +261,7 @@ def _parse_labels(
 
                 results.append({
                     'rare_species_id': species_id[metadata_paths.index(path)],
-                    'image_path': new_filename,
+                    'file_path': new_filename,
                     'is_animal': label
                 })
 
