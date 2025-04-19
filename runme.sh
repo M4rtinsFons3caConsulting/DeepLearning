@@ -27,3 +27,9 @@ python label_merger.py --csv_file binary_labels --left_on rare_species_id --righ
 
 # Adding the cropped binary labels
 python label_merger.py --csv_file cropped_labels --left_on rare_species_id --right_on image_id --how left
+
+# Create the binary oversample images from the reproducibility json
+python oversampler.py --output_name oversampler --label is_animal --min_sample 50 --target_ratio 3 --reproduce True
+
+# Create the family oversample images from the reproducibility json
+python oversampler.py --output_name oversampler --label is_animal --min_sample 50 --target_ratio 3 --reproduce True

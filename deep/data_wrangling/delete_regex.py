@@ -16,7 +16,7 @@ using safe and user-supplied regular expressions.
 import re
 import os
 import argparse
-from constants import IMAGE_DIR
+from deep.constants import IMAGE_DIR
 
 class InvalidRegexPattern(Exception):
     pass
@@ -31,11 +31,11 @@ def get_safe(pattern: str) -> re.Pattern:
 def delete_files_by_regex(compiled_pattern: re.Pattern):
     for filename in os.listdir(IMAGE_DIR):
         # Set file_path
-        file_path = os.path.join(IMAGE_DIR, filename)
-
+        file_path = IMAGE_DIR / filename
+        
         # Without extension
         name_without_ext, _ = os.path.splitext(filename)
-
+        
         if compiled_pattern.search(name_without_ext):
             if os.path.isfile(file_path):
                 os.remove(file_path)

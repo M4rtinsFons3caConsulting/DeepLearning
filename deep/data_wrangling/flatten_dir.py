@@ -16,20 +16,20 @@ import shutil
 from constants import IMAGE_DIR, DATA_DIR
 
 
-def _flatten_image_directory(dir_path):
+def _flatten_image_directory():
     """
     Moves all .jpg images from subdirectories to the root of `dir_path`, 
     flattening the folder structure. Assumes all filenames are unique.
     """
-    dir_path = os.path.abspath(dir_path) 
-    for subdir, _, files in os.walk(dir_path):
-        if subdir == dir_path:
+
+    for subdir, _, files in os.walk(DATA_DIR):
+        if subdir == DATA_DIR:
             continue  # skip root
         print(f"Visiting: {subdir}")
         for file in files:
             if file.lower().endswith(".jpg"):
                 src_path = os.path.join(subdir, file)
-                dst_path = os.path.join(dir_path, file)
+                dst_path = os.path.join(DATA_DIR, file)
                 shutil.move(src_path, dst_path)
                 print(f"Moved: {src_path} -> {dst_path}")
 
@@ -39,9 +39,8 @@ def _delete_empty_subdirs(dir_path):
     Deletes all empty subdirectories inside `dir_path`. 
     If a subdirectory contains files or other folders, raises a warning instead.
     """
-    dir_path = os.path.abspath(dir_path)
-    for subdir, subdirs, files in os.walk(dir_path, topdown=False):
-        if subdir == dir_path:
+    for subdir, subdirs, files in os.walk(DATA_DIR, topdown=False):
+        if subdir == DATA_DIR:
             continue  # skip root
         if not subdirs and not files:  # nothing inside
             os.rmdir(subdir)
@@ -49,28 +48,28 @@ def _delete_empty_subdirs(dir_path):
             raise UserWarning("Images detected, aborting.")
 
 
-def _rename_images(dir_path):
+def _rename_images():
     """
     Renames all .jpg images in `dir_path` by trimming everything after 
     the second underscore in the filename. Assumes all filenames are unique.
     """
-    dir_path = os.path.abspath(dir_path)
-    for file in os.listdir(dir_path):
+
+    for file in os.listdir(DATA_DIR):
         if file.lower().endswith(".jpg"):
             parts = file.split('_')
             if len(parts) > 2:
                 new_name = '_'.join(parts[:2]) + '.jpg'
-                old_path = os.path.join(dir_path, file)
-                new_path = os.path.join(dir_path, new_name)
+                old_path = os.path.join(DATA_DIR, file)
+                new_path = os.path.join(DATA_DIR, new_name)
                 os.rename(old_path, new_path)
                 print(f"Renamed: {file} → {os.path.basename(new_path)}")
 
 
-def _flatten_metadata(dir_path):
+def _flatten_metadata():
     """ Updates the provided `metadata.csv` file to support a flat directory structure """
     import pandas as pd
 
-    metapath = os.path.join(dir_path, "metadata.csv")
+    metapath = os.path.join(DATA_DIR, "metadata.csv")
     metaframe = pd.read_csv(metapath)
 
     metaframe['file_path'] = (
@@ -93,9 +92,9 @@ def _flatten_metadata(dir_path):
     # Done
     
 if __name__ == "__main__":
-    _flatten_image_directory(IMAGE_DIR)
-    _delete_empty_subdirs(IMAGE_DIR)
-    _rename_images(IMAGE_DIR)
-    _flatten_metadata(DATA_DIR)
+    _flatten_image_directory()
+    _delete_empty_subdirs()
+    _rename_images()
+    _flatten_metadata()
 
     print("Directory flattened, metadata updated.")

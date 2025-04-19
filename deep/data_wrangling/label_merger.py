@@ -1,7 +1,7 @@
 """
 label_merger.py
 
-A utility script for merging manual label CSVs with image metadata.
+A utility script for merging manual label CSVs with image metadata, using CLI.
 Designed for use in image classification workflows where manual labels
 are collected separately and need to be joined to the metadata by ID.
 
