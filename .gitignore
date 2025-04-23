@@ -1,1 +1,4 @@
-data/image_directory
+data
+**/__pycache__/
+deep.egg-info/
+resources/drive_data.zip

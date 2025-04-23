@@ -261,8 +261,7 @@ def _parse_labels(
 
                 results.append({
                     'rare_species_id': species_id[metadata_paths.index(path)],
-                    'file_path': new_filename,
-                    'is_animal': label
+                    'file_path': new_filename
                 })
 
             if label == 'SKIP':
