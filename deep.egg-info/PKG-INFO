@@ -16,27 +16,43 @@ Requires-Dist: matplotlib
 Requires-Dist: optuna
 Requires-Dist: scikit-learn
 Requires-Dist: opencv-python
+Requires-Dist: ipykernel
+Requires-Dist: focal-loss
+Requires-Dist: gdown
 Dynamic: license-file
 
 # README
 
-Getting started:
+# Project – Setup and Installation
 
-    1. Install the src package:
+This folder contains setup and installation guidelines for getting started with the project.  
+> **Note:** These instructions assume a clean environment and are intended to set up everything needed for the project.
 
-        To get started, create a conda environment with python version 3.11 or prior:
-            
-            - conda create <env_name> python==3.11
+## Included Steps
 
-        Then install pip on the current env:
-            - conta install pip
+- **`pip install -e .`**  
+  Install the project package in editable mode.
 
-        Lastly, install the src package in the root directory:
-            - pip install -e .
+- **`setup`**  
+  Initializes necessary directories, augments the original data, and generates the appropriate labels.
 
-    2. Download the data:
+---
 
-        The data is available at <TK INSERT DRIVE link>, as it is part of the .gitignore once you have downloaded it
-        migrate it to the data directory, and rename the entire directory to image_directory.
+These steps were designed to set up the initial environment for the project.  
+They are **meant to be run at the beginning of the project setup**.
 
-        Then run "_flatten_dir.py" as main.
+For more advanced or customized workflows, you may want to modify the scripts based on your environment.
+
+## Usage
+
+Each step can be executed via the command line. To display help or pass runtime arguments, follow this general pattern:
+
+```bash
+# For Linux
+cd ../project/
+python setup --help
+
+# For Windows
+cd ..\project\
+python setup --help
+```

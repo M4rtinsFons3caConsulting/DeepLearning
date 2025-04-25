@@ -22,7 +22,7 @@ def main():
     
     print("Step 3: Formatting dataset for flow_from_dataframe")
     directory_formatter.format_structure()
-
+    
     print("Setup complete.")
     
 if __name__ == "__main__":

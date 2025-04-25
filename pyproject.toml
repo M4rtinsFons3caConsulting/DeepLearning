@@ -32,3 +32,4 @@ include = ["deep"]
 
 [project.scripts]
 setup = "deep.setup:main"
+reset = "deep.reset:main"

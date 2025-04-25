@@ -4,3 +4,4 @@
 *.ipynb_checkpoints/*
 resources/drive_data.zip
 deep.egg-info/
+data/

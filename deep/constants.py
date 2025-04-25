@@ -12,11 +12,10 @@ PROCESSED_DIR = DATA_DIR / "processed_image_directory"
 # ------------------ Resources ------------------ #
 RESOURCES_DIR = ROOT / "resources"
 BINLBL_FILE = RESOURCES_DIR / "additional_resources" / "binary_labels.csv"
+CHECKSUM_FILE = RESOURCES_DIR / "data_checksums.csv"
 
 # ------------------ Metadata Store ------------------ #
 METASTORE_DIR = ROOT / "metadata_store"
-
-CHECKSUM_FILE = METASTORE_DIR / "data_checksums.csv"
 
 METADATA_DIR = METASTORE_DIR / "image_metadata"
 METADATA_FILE = METADATA_DIR / "metadata.csv"
@@ -55,9 +54,20 @@ MOVE_FILE_INSTRUCTIONS = {
     ),
     "cropped_labels": (
         RESOURCES_DIR / "additional_resources/cropped_labels.csv",
-        DATA_DIR / "binary_oversample_data.csv"
+        METADATA_DIR / "cropped_labels.csv"
+    ),
+    "current_signature": (
+        RESOURCES_DIR / "additional_resources/current_signature.csv",
+        METASTORE_DIR / "current_signature.csv" 
     )
 }
+
+# ------------------ Make Dir Tree ------------------ #
+MAKE_DIR_LIST = [
+        DATA_DIR, IMAGE_DIR, PROCESSED_DIR,
+        RESOURCES_DIR, METASTORE_DIR,
+        METADATA_DIR, CLEANER_JSONS, UPSAMPLE_JSONS, RESULTS_DIR
+    ]
 
 # ------------------ External Resources ------------------ #
 DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4PetkQo6OIL0mUL1pFsTD"

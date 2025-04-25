@@ -3,8 +3,11 @@ README.md
 pyproject.toml
 deep/__init__.py
 deep/constants.py
+deep/reset.py
+deep/setup.py
 deep.egg-info/PKG-INFO
 deep.egg-info/SOURCES.txt
 deep.egg-info/dependency_links.txt
+deep.egg-info/entry_points.txt
 deep.egg-info/requires.txt
 deep.egg-info/top_level.txt

@@ -7,3 +7,6 @@ matplotlib
 optuna
 scikit-learn
 opencv-python
+ipykernel
+focal-loss
+gdown
