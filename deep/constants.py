@@ -25,7 +25,7 @@ CLEANER_JSONS = METASTORE_DIR / "cleaner_logs"
 UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
 RESULTS_DIR = METASTORE_DIR / "model_results"
 
-SINGATURE_FILE = METADATA_DIR / "current_signature.csv"
+SIGNATURE_FILE = METADATA_DIR / "current_signature.csv"
 SIGNATURE_COLS = ["CLEANER", "UPSAMPLER"]
 
 # ------------------ Zip Instructions ------------------ #
@@ -62,14 +62,6 @@ MOVE_FILE_INSTRUCTIONS = {
 # ------------------ External Resources ------------------ #
 DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4PetkQo6OIL0mUL1pFsTD"
 
-# Upsampling mappings
-BINARY_UPSAMPLE = RESOURCES_DIR / "binary_upsample_map.json"
-FAMILY_UPSAMPLE = RESOURCES_DIR / "family_upsample_map.json"
-
-IMG_SIZE = 224
-BATCH_SIZE = 32
-SEED = 20
-
 # Precompiled regex patterns used for filename recognition or filtering
 REGEX_REF = {
     'crop': re.compile(r'crop'),
@@ -95,3 +87,8 @@ IMAGENET_NORM = {
     "mean": [0.406, 0.456, 0.485],
     "std": [0.225, 0.224, 0.229]
 }
+
+# ------------------ Model Run Configuration ------------------ # 
+IMG_SIZE = 224
+BATCH_SIZE = 32
+SEED = 20

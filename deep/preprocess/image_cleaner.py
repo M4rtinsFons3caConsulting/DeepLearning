@@ -1,10 +1,9 @@
 import cv2
 import json
 import numpy as np
-from pathlib import Path
 from datetime import datetime
 from deep.constants import IMAGE_DIR, PROCESSED_DIR, IMAGENET_NORM, CLEANER_JSONS
-
+from deep.utils import build_updater
 
 def _preprocess_image(image: np.ndarray, config: dict) -> np.ndarray:
     result = image.copy()
@@ -87,6 +86,5 @@ def clean_directory(config: dict) -> None:
     print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")
     save_config(config)
 
-
-    print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")
-    save_config(config)
+    # Update the build
+    build_updater.write_to(output_path)

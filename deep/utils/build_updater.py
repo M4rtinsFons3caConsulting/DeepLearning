@@ -7,7 +7,7 @@ The file contains a single row and predefined columns.
 import csv
 from pathlib import Path
 from typing import Dict
-from deep.constants import SINGATURE_FILE, SIGNATURE_COLS, UPSAMPLE_JSONS, CLEANER_JSONS
+from deep.constants import SIGNATURE_FILE, SIGNATURE_COLS, UPSAMPLE_JSONS, CLEANER_JSONS
 
 def write_to(path: Path) -> None:
     """
@@ -28,7 +28,7 @@ def write_to(path: Path) -> None:
     row = {col_name: "" for col_name in SIGNATURE_COLS}
 
     try:
-        with open(SINGATURE_FILE, newline='') as f:
+        with open(SIGNATURE_FILE, newline='') as f:
             reader = csv.DictReader(f)
             row.update(next(reader, row))
     except FileNotFoundError:
@@ -36,7 +36,7 @@ def write_to(path: Path) -> None:
 
     row[col] = path_str
 
-    with open(SINGATURE_FILE, 'w', newline='') as f:
+    with open(SIGNATURE_FILE, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=SIGNATURE_COLS)
         writer.writeheader()
         writer.writerow(row)
@@ -47,6 +47,6 @@ def write_from() -> Dict[str, str]:
     Reads the single row from the CSV file and returns it as a dictionary.
     """
 
-    with open(SINGATURE_FILE, newline='') as f:
+    with open(SIGNATURE_FILE, newline='') as f:
         reader = csv.DictReader(f)
         return next(reader)

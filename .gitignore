@@ -1,4 +1,6 @@
-data
 **/__pycache__/
-deep.egg-info/
+*.py[cod]
+*.ipynb_checkpoints/
+*.ipynb_checkpoints/*
 resources/drive_data.zip
+deep.egg-info/

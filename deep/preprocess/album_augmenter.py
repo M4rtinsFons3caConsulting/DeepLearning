@@ -7,7 +7,6 @@ Supports CLI generation of augmentation plans (maps), programmatic oversampling,
 
 # Built-in and STL
 import json
-import argparse
 from pathlib import Path
 from typing import Dict, Any, List
 from datetime import datetime
@@ -24,7 +23,8 @@ from tensorflow.keras.preprocessing.image import ( # type: ignore
 )
 
 # Root package
-from deep.constants import PROCESSED_DIR, DATA_DIR, UPSAMPLE_JSONS
+from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS
+from deep.utils import build_updater
 
 # Transformations dict for ImageGenerator
 TRANSFORM_GENERATORS: Dict[str, ImageDataGenerator] = {
@@ -163,7 +163,11 @@ def generate_oversample_map(
     with open(json_path, "w") as f:
         json.dump(plan_with_config, f, indent=4)
     
+    # Update the build
+    build_updater.write_to(json_path)
+
     return plan
+
 
 def _apply_transformation(
         img: Any,
@@ -231,6 +235,5 @@ def oversample_labels(
             print(f"Failed on {source.name}: {e}")
 
     df_aug = pd.DataFrame(augmented_rows)
-    filepath = DATA_DIR / f"{output_name}.csv"
+    filepath = METADATA_DIR / f"{output_name}.csv"
     df_aug.to_csv(filepath, mode='a', index=False)
-
