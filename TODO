@@ -1,1 +1,18 @@
+Models:
+- Raw
+- Transformations
+- Transformations + Augmentations
+
+Layers/Options:
+- Simple
+- Regularization
+- Dropout
+- Regularization + Dropout
+
+Run each model once:
+  . if worst than previous result -> stop
+  . if better than previous result -> run 4 more times
+
+result == 95% Confidence Interval over the 5 runs.
+
 #FIXME: The README.md's need aditional work.

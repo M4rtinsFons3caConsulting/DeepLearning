@@ -72,6 +72,14 @@ MAKE_DIR_LIST = [
 # ------------------ External Resources ------------------ #
 DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4PetkQo6OIL0mUL1pFsTD"
 
+# Upsampling mappings
+BINARY_UPSAMPLE = RESOURCES_DIR / "binary_upsample_map.json"
+FAMILY_UPSAMPLE = RESOURCES_DIR / "family_upsample_map.json"
+
+IMG_SIZE = 224
+BATCH_SIZE = 64
+SEED = 20
+
 # Precompiled regex patterns used for filename recognition or filtering
 REGEX_REF = {
     'crop': re.compile(r'crop'),
