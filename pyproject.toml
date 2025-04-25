@@ -19,7 +19,8 @@ dependencies = [
     "scikit-learn",
     "opencv-python",
     "ipykernel",
-    "focal-loss"
+    "focal-loss",
+    "gdown"
 ]
 
 [build-system]

@@ -10,12 +10,13 @@ import json
 import argparse
 from pathlib import Path
 from typing import Dict, Any, List
+from datetime import datetime
 
 # 3rd party
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ( #type: ignore
+from tensorflow.keras.preprocessing.image import ( # type: ignore
     ImageDataGenerator,
     img_to_array,
     array_to_img,
@@ -23,7 +24,7 @@ from tensorflow.keras.preprocessing.image import ( #type: ignore
 )
 
 # Root package
-from deep.constants import IMAGE_DIR, RESOURCES_DIR, DATA_DIR, METADATA_FILE, BINARY_UPSAMPLE, FAMILY_UPSAMPLE
+from deep.constants import PROCESSED_DIR, DATA_DIR, UPSAMPLE_JSONS
 
 # Transformations dict for ImageGenerator
 TRANSFORM_GENERATORS: Dict[str, ImageDataGenerator] = {
@@ -42,13 +43,25 @@ TRANSFORM_GENERATORS: Dict[str, ImageDataGenerator] = {
     "rotate_90": ImageDataGenerator(rotation_range=90),
 }
 
+
 def compute_effective_class_weights(
     df: pd.DataFrame,
     label_column: str,
     beta: float = 0.999,
     normalize: bool = True
 ) -> Dict[str, float]:
+    """
+    Computes effective class weights based on the class distribution.
     
+    Args:
+        df (pd.DataFrame): The dataframe containing the data.
+        label_column (str): The label column for computing class weights.
+        beta (float, optional): Beta parameter for effective number calculation. Defaults to 0.999.
+        normalize (bool, optional): Whether to normalize the weights. Defaults to True.
+
+    Returns:
+        Dict[str, float]: A dictionary containing the class weights.
+    """
     def effective_num(n: int, beta: float) -> float:
         return (1 - beta**n) / (1 - beta)
 
@@ -63,21 +76,47 @@ def compute_effective_class_weights(
 
     return class_weights
 
+
 def compute_imbalance_ratio(
     df: pd.DataFrame,
     label_column: str
 ) -> Dict[str, float]:
+    """
+    Computes the imbalance ratio for each class in the dataset.
+    
+    Args:
+        df (pd.DataFrame): The dataframe containing the data.
+        label_column (str): The label column to compute the imbalance ratio for.
+
+    Returns:
+        Dict[str, float]: A dictionary with the imbalance ratio for each class.
+    """
     counts = df[label_column].value_counts()
     max_count = counts.max()
     return {label: max_count / count for label, count in counts.items()}
 
-def map_oversample(
+
+def generate_oversample_map(
     df: pd.DataFrame,
     label: str,
     target_ratio: float,
-    min_samples: int
+    min_samples: int,
+    config: dict
 ) -> List[Dict[str, str]]:
+    """
+    Generates an oversample plan to balance the class distribution based on a target ratio.
+    Also writes the plan and configuration to a JSON file with a timestamp.
 
+    Args:
+        df (pd.DataFrame): The dataframe containing the data.
+        label (str): The label column to balance.
+        target_ratio (float): The desired target ratio for balancing.
+        min_samples (int): The minimum number of samples per class.
+        config (dict): Configuration dictionary for transformations.
+
+    Returns:
+        List[Dict[str, str]]: A list of oversampling instructions (augmentation plans).
+    """
     counts = df[label].value_counts()
     max_count = counts.max()
     majority_label = counts.idxmax()
@@ -116,12 +155,30 @@ def map_oversample(
             needed -= n_samples
             transform_idx += 1
 
+    # Write oversample map and config to JSON
+    timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")
+    plan_with_config = {"config": config, "oversample_plan": plan.to_dict(orient="records")}
+    json_path = Path(UPSAMPLE_JSONS) / f"oversample_plan_{timestamp}.json"
+    
+    with open(json_path, "w") as f:
+        json.dump(plan_with_config, f, indent=4)
+    
     return plan
 
 def _apply_transformation(
-        img: Any
-    , transformation_key: str
-    ) -> Any:
+        img: Any,
+        transformation_key: str
+) -> Any:
+    """
+    Applies a transformation to an image based on the transformation key.
+
+    Args:
+        img (Any): The image to transform.
+        transformation_key (str): The key to select the transformation from TRANSFORM_GENERATORS.
+
+    Returns:
+        Any: The transformed image.
+    """
     if transformation_key not in TRANSFORM_GENERATORS:
         raise ValueError(f"Unknown transformation key: {transformation_key}")
 
@@ -130,67 +187,50 @@ def _apply_transformation(
     img_array = img_array.reshape((1,) + img_array.shape)
     aug_iter = datagen.flow(img_array, batch_size=1)
     aug_img_array = next(aug_iter)[0].astype(np.uint8)
+
     return array_to_img(aug_img_array)
 
-def oversample_labels():
-    instructions = [
-        ['is_animal', 'binary_oversampled_data', BINARY_UPSAMPLE],
-        ['family', 'family_oversampled_data', FAMILY_UPSAMPLE]
-    ]
-    for label, output_name, plan in instructions:
 
-        output_name = Path(output_name).stem
+def oversample_labels(
+        label: str,
+        output_name: str,
+        plan: str
+) -> None:
+    """
+    Applies oversampling transformations on the dataset based on a generated plan.
 
-        with open(plan, "r") as f:
-            plan_data = json.load(f)
+    Args:
+        label (str): The label column to oversample.
+        output_name (str): The output name for the generated oversampled dataset.
+        plan (str): The path to the oversampling plan (JSON file).
+    """
+    output_name = Path(output_name).stem
 
-        augmented_rows = []
+    with open(plan, "r") as f:
+        plan_data = json.load(f)
 
-        for entry in plan_data:
-            source = IMAGE_DIR / entry["file_path"]
-            filename = f"{source.stem}_{entry[label]}_{entry['transform_key']}{source.suffix}"
-            destination = IMAGE_DIR / filename
+    oversample_plan = plan_data.get("oversample_plan", [])
+    augmented_rows = []
 
-            try:
-                img = load_img(source)
-                new_img = _apply_transformation(img, entry["transform_key"])
-                new_img.save(destination)
+    for entry in oversample_plan:
+        source = PROCESSED_DIR / entry["file_path"]
+        filename = f"{source.stem}_{entry[label]}_{entry['transform_key']}{source.suffix}"
+        destination = PROCESSED_DIR / filename
 
-                augmented_rows.append({
-                    "rare_species_id": entry['rare_species_id'],
-                    "file_path": str(filename)
-                })
+        try:
+            img = load_img(source)
+            new_img = _apply_transformation(img, entry["transform_key"])
+            new_img.save(destination)
 
-            except Exception as e:
-                print(f"Failed on {source.name}: {e}")
+            augmented_rows.append({
+                "rare_species_id": entry['rare_species_id'],
+                "file_path": str(filename)
+            })
 
-        df_aug = pd.DataFrame(augmented_rows)
-        filepath = DATA_DIR / f"{output_name}.csv"
-        df_aug.to_csv(filepath, mode='a', index=False)
+        except Exception as e:
+            print(f"Failed on {source.name}: {e}")
 
-# CLI for generating augmentation plan only
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate oversampling augmentation plan only.")
-    parser.add_argument('--output_name', type=str, required=True, help="Base name for output files")
-    parser.add_argument('--label', type=str, required=True, help="Label column for class balancing")
-    parser.add_argument('--min_sample', type=int, default=30, help="Minimum number of samples per class")
-    parser.add_argument('--target_ratio', type=float, default=3.0, help="Desired maximum imbalance ratio")
-    
-    args = parser.parse_args()
+    df_aug = pd.DataFrame(augmented_rows)
+    filepath = DATA_DIR / f"{output_name}.csv"
+    df_aug.to_csv(filepath, mode='a', index=False)
 
-    if args.label == "is_animal":
-        df_meta = pd.read_csv(METADATA_FILE)
-        df_bin = pd.read_csv(DATA_DIR / "binary_oversample_data.csv")
-        df = pd.concat([df_meta, df_bin], ignore_index=True)
-    else:
-        df = pd.read_csv(METADATA_FILE)
-
-    df = df[['rare_species_id', 'file_path', f'{args.label}']]
-    plan = pd.DataFrame(map_oversample(df, args.label, args.target_ratio, args.min_sample))
-    plan_path = RESOURCES_DIR / f"{Path(args.output_name).stem}.json"
-    plan_path.write_text(plan.to_json(orient='records', indent=2))
-    print(f"Saved oversample map with {len(plan)} entries to {plan_path}")
-
-    # Actual calls made during this project.
-    # python album_augmenter.py --output_name binary_upsample_map --label is_animal --min_sample 150 --target_ratio 1
-    # python album_augmenter.py --output_name family_upsample_map --label family --min_sample 150 --target_ratio 2

@@ -60,14 +60,6 @@ def _rename_images() -> None:
                 os.rename(old_path, new_path)
                 print(f"Renamed: {file} → {os.path.basename(new_path)}")
 
-def _move_metadata() -> None:
-    """Moves metadata.csv from IMAGE_DIR to DATA_DIR."""
-    src_path = IMAGE_DIR / "metadata.csv"
-    if os.path.exists(src_path):
-        shutil.move(src_path, METADATA_FILE)
-        print(f"Moved metadata.csv from {src_path} to {METADATA_FILE}")
-    else:
-        print(f"metadata.csv not found in {src_path}")
 
 def _reshape_metadata() -> None:
     """Updates `metadata.csv` to support a flat directory structure."""
@@ -82,13 +74,6 @@ def _reshape_metadata() -> None:
 
     metaframe.drop(columns=["eol_content_id", "eol_page_id", "kingdom"], inplace=True)
     metaframe.to_csv(METADATA_FILE, index=False)
-
-def _move_remaining_files() -> None:
-    """Moves cropped_labels.csv to DATA_DIR and renames it."""
-    shutil.move(
-        RESOURCES_DIR / "additional_resources/cropped_labels.csv",
-        DATA_DIR / "binary_oversample_data.csv"
-    )
 
 def _merge_binary_labels() -> None:
     """Merges binary labels with the reshaped metadata."""
@@ -117,16 +102,10 @@ def format_structure() -> None:
     print("Step 3: Renaming images")
     _rename_images()
 
-    print("Step 4: Moving metadata file")
-    _move_metadata()
-
-    print("Step 5: Reshaping metadata")
+    print("Step 4: Reshaping metadata")
     _reshape_metadata()
 
-    print("Step 6: Moving additional label file")
-    _move_remaining_files()
-
-    print("Step 7: Merging binary labels")
+    print("Step 5: Merging binary labels")
     _merge_binary_labels()
 
     print("Directory reshaping complete.")

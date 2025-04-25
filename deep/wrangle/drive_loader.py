@@ -1,5 +1,5 @@
 """
-This script ingests the data from from the google drive where the files have been provided, and validates that both they and 
+This script ingests the data from the google drive where the files have been provided, and validates that both they and 
 the additional resources created for this project exist in their expected location in the resources directory.
 
 This script is intented to be ran as part of the setup process, for more details please consult the package level README.md 

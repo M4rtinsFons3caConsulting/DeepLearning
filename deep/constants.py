@@ -1,28 +1,65 @@
 import re
 from pathlib import Path
 
-# Resolve project Root
+# ------------------ Root ------------------ #
 ROOT = Path(__file__).resolve().parent.parent
 
-# Data Paths
+# ------------------ Data  ------------------ #
 DATA_DIR = ROOT / "data"
-IMAGE_DIR = DATA_DIR / "image_directory"
-METADATA_FILE = DATA_DIR / "metadata.csv"
+IMAGE_DIR = DATA_DIR / "raw_image_directory"
+PROCESSED_DIR = DATA_DIR / "processed_image_directory"
 
-# Resources Paths
+# ------------------ Resources ------------------ #
 RESOURCES_DIR = ROOT / "resources"
-CHECKSUM_FILE = RESOURCES_DIR / "data_checksums.csv"
-BINLBL_FILE = RESOURCES_DIR / "additional_resources/binary_labels.csv"
+BINLBL_FILE = RESOURCES_DIR / "additional_resources" / "binary_labels.csv"
 
-# Unpackaging instructions
-ZIP_FILE_INSTRUCTIONS = \
-    {
-        "drive_data" : (RESOURCES_DIR / "drive_data.zip", IMAGE_DIR, True),
-        "additional_resources" : (RESOURCES_DIR / "additional_resources.zip", RESOURCES_DIR, True),
-        "cropped_images" : (RESOURCES_DIR / "additional_resources/cropped_images.zip", IMAGE_DIR, False)
-    }
+# ------------------ Metadata Store ------------------ #
+METASTORE_DIR = ROOT / "metadata_store"
 
-# Drive URL
+CHECKSUM_FILE = METASTORE_DIR / "data_checksums.csv"
+
+METADATA_DIR = METASTORE_DIR / "image_metadata"
+METADATA_FILE = METADATA_DIR / "metadata.csv"
+
+CLEANER_JSONS = METASTORE_DIR / "cleaner_logs"
+UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
+RESULTS_DIR = METASTORE_DIR / "model_results"
+
+SINGATURE_FILE = METADATA_DIR / "current_signature.csv"
+SIGNATURE_COLS = ["CLEANER", "UPSAMPLER"]
+
+# ------------------ Zip Instructions ------------------ #
+ZIP_FILE_INSTRUCTIONS = {
+    "drive_data": (
+        RESOURCES_DIR / "drive_data.zip", 
+        IMAGE_DIR, 
+        True
+    ),
+    "additional_resources": (
+        RESOURCES_DIR / "additional_resources.zip", 
+        RESOURCES_DIR, 
+        True
+    ),
+    "cropped_images": (
+        RESOURCES_DIR / "additional_resources/cropped_images.zip", 
+        IMAGE_DIR, 
+        False
+    )
+}
+
+# ------------------ Move Instructions ------------------ #
+MOVE_FILE_INSTRUCTIONS = {
+    "metadata": (
+        IMAGE_DIR / "metadata.csv",
+        METADATA_FILE
+    ),
+    "cropped_labels": (
+        RESOURCES_DIR / "additional_resources/cropped_labels.csv",
+        DATA_DIR / "binary_oversample_data.csv"
+    )
+}
+
+# ------------------ External Resources ------------------ #
 DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4PetkQo6OIL0mUL1pFsTD"
 
 # Upsampling mappings
@@ -52,7 +89,8 @@ REGEX_REF = {
     'all': re.compile(r'[a-zA-Z]')
 }
 
-# ImageNet normalization constants, in CV2 format i.e. BGR
+# ------------------ Normalization Constants ------------------ #
+# ImageNet normalization in OpenCV BGR order
 IMAGENET_NORM = {
     "mean": [0.406, 0.456, 0.485],
     "std": [0.225, 0.224, 0.229]
