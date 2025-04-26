@@ -41,6 +41,7 @@ def smart_resize_img(image, target_size=(IMG_SIZE, IMG_SIZE)):
     return resized_img
 
 
+
 def get_fitted_model_metrics(model):
     import numpy as np
 

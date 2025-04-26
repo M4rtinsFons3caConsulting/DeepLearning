@@ -10,20 +10,56 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 from focal_loss import BinaryFocalLoss
 
-from deep.constants import IMAGE_DIR, IMG_SIZE, BATCH_SIZE
+from deep.constants import IMAGE_DIR, IMG_SIZE, BATCH_SIZE, PROCESSED_DIR, METADATA_DIR
 from deep.preprocess.album_augmenter import compute_effective_class_weights
 from deep.models.aux_funcs import split_data, show_augmented_images, smart_resize_img, get_fitted_model_metrics, plot_metrics, plot_confusion_matrix
 
 
 def run_binary_model(
-    data: pd.DataFrame
+    file_path: str
+    ,data: pd.DataFrame
     ,seed: int
     ,model
     ,loss: str
     ,epochs: int
+    ,type: str
 ):
+    import os
+    import json
+
+    # Load baseline
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            baseline_data = json.load(f)
+
+        baseline_score = baseline_data['score']
+
+        print(f"Loaded baseline score: {baseline_score}")
+
+    else:
+        baseline_score = None
+        
+        print("No baseline score found, saving current as baseline after run.")
+    
     # Split the data
     train_df, val_df, test_df = split_data(data, 'is_animal', seed)
+
+    if type == 'original':
+        dir = IMAGE_DIR
+
+    elif type == 'transformed':
+        dir = PROCESSED_DIR
+
+    elif type == 'upsample':
+        dir = PROCESSED_DIR
+        upsampled = pd.read_csv(f'{METADATA_DIR}/cropped_labels.csv')
+        # Add the new metadata to train_df
+        train_df = pd.concat([
+            train_df
+            ,upsampled
+        ], ignore_index=True
+        , axis=0
+        )
 
     # Changing target to string
     train_df['is_animal'] = train_df['is_animal'].astype(str)
@@ -45,7 +81,7 @@ def run_binary_model(
     # Train generator
     binary_train_generator = train_datagen.flow_from_dataframe(
         dataframe=train_df,
-        directory=f'{IMAGE_DIR}',
+        directory=dir,
         x_col='file_path',
         y_col='is_animal',
         target_size=(IMG_SIZE, IMG_SIZE),
@@ -58,7 +94,7 @@ def run_binary_model(
     # Validation generator
     binary_val_generator = test_datagen.flow_from_dataframe(
         dataframe=val_df,
-        directory=f'{IMAGE_DIR}',
+        directory=dir,
         x_col='file_path',
         y_col='is_animal',
         target_size=(IMG_SIZE, IMG_SIZE),
@@ -70,7 +106,7 @@ def run_binary_model(
     # Test generator
     binary_test_generator = test_datagen.flow_from_dataframe(
         dataframe=test_df,
-        directory=f'{IMAGE_DIR}',
+        directory=dir,
         x_col='file_path',
         y_col='is_animal',
         target_size=(IMG_SIZE, IMG_SIZE),
@@ -123,10 +159,27 @@ def run_binary_model(
     )
 
     # Get best epoch metrics
-    precision = get_fitted_model_metrics(fitted_binary)
+    val_precision = get_fitted_model_metrics(fitted_binary)
 
     # Plot metrics
     plot_metrics(fitted_binary)
+
+    if baseline_score is None or val_precision > baseline_score:
+        baseline_data = {
+            'score': val_precision,
+            'model': config,
+            'loss': loss,
+            'type': type
+        }
+
+        # Save model scores as new baseline
+        with open(file_path, "w") as f:
+            json.dump(baseline_data, f, indent=2)
+
+        print("Saved current model as new baseline")
+
+    else:
+        print("Current model not better than baseline")
 
     # # Make predictions
     # predictions = binary_model.predict(
@@ -149,90 +202,106 @@ def run_binary_model(
     # # Plot confusion matrix
     # plot_confusion_matrix(y_true, y_pred, data['is_animal'].unique())
 
-    return precision, config
+    # return precision, config
 
 
-def multiple_model_run(
-    file_path: str
-    ,seeds: list
-    ,data: pd.DataFrame
-    ,model
-    ,loss: str
-    ,epochs: int
-):
-    import os
-    import json
-    import scipy.stats as stats
-    import numpy as np
+# def multiple_model_run(
+#     file_path: str
+#     ,seeds: list
+#     ,data: pd.DataFrame
+#     ,model
+#     ,loss: str
+#     ,epochs: int
+#     ,type: str
+# ):
+#     import os
+#     import json
+#     import scipy.stats as stats
+#     import numpy as np
 
-    # Load baseline
-    if os.path.exists(file_path):
-        with open(file_path, "r") as f:
-            baseline_data = json.load(f)
+#     if type == 'original':
+#         pass
 
-        baseline_scores = baseline_data['scores']
+#     elif type == 'transformed':
+#         pass
 
-        print(f"Loaded baseline scores: {baseline_scores}")
+#     elif type == 'upsample':
+#         pass
 
-    else:
-        baseline_scores = []
+#     else:
+#         raise ValueError("Invalid type. Choose one from 'original', 'transformed' or 'upsample'.")
+
+#     # Load baseline
+#     if os.path.exists(file_path):
+#         with open(file_path, "r") as f:
+#             baseline_data = json.load(f)
+
+#         baseline_scores = baseline_data['scores']
+
+#         print(f"Loaded baseline scores: {baseline_scores}")
+
+#     else:
+#         baseline_scores = []
         
-        print("No baseline score found, saving current as baseline after run.")
+#         print("No baseline score found, saving current as baseline after run.")
 
-    # Run the model for the first seed
-    current_scores = []
+#     # Run the model for the first seed
+#     current_scores = []
 
-    score, config = run_binary_model(
-        data=data
-        ,seed=seeds[0]
-        ,model=model
-        ,loss=loss
-        ,epochs=epochs
-    )
+#     score, config = run_binary_model(
+#         data=data
+#         ,seed=seeds[0]
+#         ,model=model
+#         ,loss=loss
+#         ,epochs=epochs
+#         ,type=type
+#     )
 
-    current_scores.append(score)
+#     current_scores.append(score)
 
-    # Checking if baseline exists
-    if not baseline_scores:
-        print("No baseline available - accepting current model as baseline")
+#     # Checking if baseline exists
+#     if not baseline_scores:
+#         print("No baseline available - accepting current model as baseline")
         
-        run_all = True
+#         run_all = True
 
-    else:
-        # Perform t-test
-        t_stat, p_val = stats.ttest_ind(current_scores, baseline_scores, equal_var=False)
-        run_all = p_val < 0.05
+#     else:
+#         # Perform t-test
+#         t_stat, p_val = stats.ttest_ind(current_scores, baseline_scores, equal_var=False)
+#         run_all = p_val < 0.05
 
-    # Run remaining seeds if better
-    if run_all:
-        for seed in seeds[1:]:
-            score, _ = run_binary_model(
-                data=data
-                ,seed=seed
-                ,model=model
-                ,loss=loss
-                ,epochs=epochs
-            )
+#     # Run remaining seeds if better
+#     if run_all:
+#         for seed in seeds[1:]:
+#             score, _ = run_binary_model(
+#                 data=data
+#                 ,seed=seed
+#                 ,model=model
+#                 ,loss=loss
+#                 ,epochs=epochs
+#                 ,type=type
+#             )
 
-            current_scores.append(score)
+#             current_scores.append(score)
 
-        # Final t-test
-        t_stat, p_val = stats.ttest_ind(current_scores, baseline_scores, equal_var=False)
-        mean = np.mean(current_scores)
-        std_err = stats.sem(current_scores)
-        ci = stats.t.interval(0.95, len(current_scores) - 1, loc=mean, scale=std_err)
+#         # Final t-test
+#         t_stat, p_val = stats.ttest_ind(current_scores, baseline_scores, equal_var=False)
+#         mean = np.mean(current_scores)
+#         std_err = stats.sem(current_scores)
+#         ci = stats.t.interval(0.95, len(current_scores) - 1, loc=mean, scale=std_err)
 
-        baseline_data = {
-            'scores': current_scores
-            ,'model': config
-            ,'loss': loss
-        }
+#         baseline_data = {
+#             'scores': current_scores
+#             ,'model': config
+#             ,'loss': loss
+#             ,'type': type
+#         }
 
-        # Save model scores as new baseline
-        with open(file_path, "w") as f:
-            json.dump(baseline_data, f, indent=2)
+#         # Save model scores as new baseline
+#         with open(file_path, "w") as f:
+#             json.dump(baseline_data, f, indent=2)
 
-        print("Saved current model as new baseline")
+#         print("Saved current model as new baseline")
 
-    else:
-        print("Early stop - current model not significantly better than baseline")
+#     else:
+#         print("Early stop - current model not significantly better than baseline")

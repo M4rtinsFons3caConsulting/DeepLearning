@@ -1,0 +1,11 @@
+{
+    "median_blur": true,
+    "gaussian_blur": false,
+    "bilateral": false,
+    "meanshift": true,
+    "hist_eq": false,
+    "clahe": true,
+    "gamma_correction": false,
+    "gamma": 1.2,
+    "imagenet_norm": true
+}
