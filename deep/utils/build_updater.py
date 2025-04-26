@@ -17,10 +17,9 @@ def write_to(path: Path) -> None:
     """
 
     path_str = str(path)
-
-    if path_str in UPSAMPLE_JSONS:
+    if path.parent == UPSAMPLE_JSONS:
         col = "UPSAMPLER"
-    elif path_str in CLEANER_JSONS:
+    elif path.parent == CLEANER_JSONS:
         col = "CLEANER"
     else:
         raise ValueError("Provided path is not in UPSAMPLE_JSONS or CLEANER_JSONS.")

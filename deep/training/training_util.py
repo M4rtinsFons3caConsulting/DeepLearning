@@ -5,8 +5,19 @@ def split_data(data, label):
     from sklearn.model_selection import train_test_split
 
     # Performing the splits
-    train_df, test_df = train_test_split(data, test_size=0.2, stratify=data[label], random_state=SEED)  # Create test set
-    train_df, val_df = train_test_split(train_df, test_size=0.15, stratify=train_df[label], random_state=SEED)  # Create train and validation set
+    train_df, test_df = train_test_split(
+        data, 
+        test_size=0.2, 
+        stratify=data[label], 
+        random_state=SEED
+        )  # Create test set
+    
+    train_df, val_df = train_test_split(
+        train_df, 
+        test_size=0.15, 
+        stratify=train_df[label], 
+        random_state=SEED)
+      # Create train and validation set
 
     return train_df, val_df, test_df
 

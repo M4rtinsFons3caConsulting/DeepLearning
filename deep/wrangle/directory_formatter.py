@@ -11,9 +11,8 @@ the structure was flattened to support the `flow_from_dataframe` paradigm.
 
 import os
 import shutil
-from pathlib import Path
 import pandas as pd
-from deep.constants import IMAGE_DIR, METADATA_FILE, REGEX_REF, BINLBL_FILE, MAKE_DIR_LIST
+from deep.constants import IMAGE_DIR, METADATA_FILE, REGEX_REF, BINLBL_FILE
 
 def _flatten_image_directory() -> None:
     """
@@ -91,32 +90,22 @@ def _merge_binary_labels() -> None:
 
     merged.to_csv(METADATA_FILE, index=False)
 
-def _make_dir():
-    """Creates the necessary directories for downstream processes"""
-    # Iterate through each path and create it if it doesn't exist
-    for path in MAKE_DIR_LIST:
-        path.mkdir(parents=True, exist_ok=True)  # Create directories
-        print(f"Created directory: {path}")
-
 def format_structure() -> None:
     print("Starting directory reshaping routine...")
 
-    print("Step 1: Flattening image directory")
+    print("Step 1 Flattening image directory")
     _flatten_image_directory()
 
-    print("Step 2: Deleting empty subdirectories")
+    print("Step 2 Deleting empty subdirectories")
     _delete_empty_subdirs()
 
-    print("Step 3: Renaming images")
+    print("Step 3 Renaming images")
     _rename_images()
 
-    print("Step 4: Reshaping metadata")
+    print("Step 4 Reshaping metadata")
     _reshape_metadata()
 
-    print("Step 5: Merging binary labels")
+    print("Step 5 Merging binary labels")
     _merge_binary_labels()
-
-    print("Step 6: Make necessary directories")
-    _make_dir()
 
     print("Directory reshaping complete.")

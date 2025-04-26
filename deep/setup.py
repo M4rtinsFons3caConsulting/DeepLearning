@@ -11,16 +11,19 @@ moderate oversampling using augmentation techniques.
 
 """
 
-from deep.wrangle import drive_loader, resource_unpacker, directory_formatter
+from deep.wrangle import drive_loader, directory_maker, resource_unpacker, directory_formatter 
 
 def main():
     print("Step 1: Loading source files from Google Drive")
     drive_loader.load_files()
     
-    print("Step 2: Extracting supplementary archives")
+    print("Step 2: Making the necessary directories")
+    directory_maker.make_dir()
+
+    print("Step 3: Extracting supplementary archives")
     resource_unpacker.extract_archives()
     
-    print("Step 3: Formatting dataset for flow_from_dataframe")
+    print("Step 4: Formatting dataset for flow_from_dataframe")
     directory_formatter.format_structure()
     
     print("Setup complete.")

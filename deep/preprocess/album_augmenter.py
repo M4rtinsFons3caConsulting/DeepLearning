@@ -23,7 +23,7 @@ from tensorflow.keras.preprocessing.image import ( # type: ignore
 )
 
 # Root package
-from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS
+from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS, IMAGE_DIR
 from deep.utils import build_updater
 
 # Transformations dict for ImageGenerator
@@ -31,8 +31,8 @@ TRANSFORM_GENERATORS: Dict[str, ImageDataGenerator] = {
     "flip_lr": ImageDataGenerator(horizontal_flip=True),
     "bright_plus": ImageDataGenerator(preprocessing_function=lambda x: x * 1.10),
     "bright_minus": ImageDataGenerator(preprocessing_function=lambda x: x * 0.90),
-    "sat_plus": ImageDataGenerator(preprocessing_function=lambda x: tf.image.adjust_saturation(x, 1.15)),
-    "sat_minus": ImageDataGenerator(preprocessing_function=lambda x: tf.image.adjust_saturation(x, 0.85)),
+    "sat_plus": ImageDataGenerator(preprocessing_function=lambda x: tf.image.adjust_saturation(x, 1.10)),
+    "sat_minus": ImageDataGenerator(preprocessing_function=lambda x: tf.image.adjust_saturation(x, 0.90)),
     "zoom_in": ImageDataGenerator(zoom_range=[1.0, 1.2]),
     "zoom_out": ImageDataGenerator(zoom_range=[0.8, 1.0]),
     "shift": ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1),
@@ -100,8 +100,7 @@ def generate_oversample_map(
     df: pd.DataFrame,
     label: str,
     target_ratio: float,
-    min_samples: int,
-    config: dict
+    min_samples: int
 ) -> List[Dict[str, str]]:
     """
     Generates an oversample plan to balance the class distribution based on a target ratio.
@@ -156,6 +155,12 @@ def generate_oversample_map(
             transform_idx += 1
 
     # Write oversample map and config to JSON
+    config = {
+        'label': label,
+        'target_ratio': target_ratio,
+        'min_samples': min_samples
+    }
+
     timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")
     plan_with_config = {"config": config, "oversample_plan": plan.to_dict(orient="records")}
     json_path = Path(UPSAMPLE_JSONS) / f"oversample_plan_{timestamp}.json"
@@ -208,7 +213,6 @@ def oversample_labels(
         output_name (str): The output name for the generated oversampled dataset.
         plan (str): The path to the oversampling plan (JSON file).
     """
-    output_name = Path(output_name).stem
 
     with open(plan, "r") as f:
         plan_data = json.load(f)
@@ -217,7 +221,7 @@ def oversample_labels(
     augmented_rows = []
 
     for entry in oversample_plan:
-        source = PROCESSED_DIR / entry["file_path"]
+        source = IMAGE_DIR / entry["file_path"]
         filename = f"{source.stem}_{entry[label]}_{entry['transform_key']}{source.suffix}"
         destination = PROCESSED_DIR / filename
 
