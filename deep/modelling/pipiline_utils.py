@@ -1,6 +1,30 @@
-from typing import Tuple, Any
+import json
 import pandas as pd
-from deep.constants import MODEL_IMAGE_SIZE, SEEDS
+import datetime
+from typing import Tuple
+from deep.constants import SPLITTER_JSONS 
+from deep.utils import build_updater
+
+def save_split_info(
+        train_df
+        , val_df
+        , test_df
+    ):
+
+    split_info = {
+        "train_indices": train_df.index.tolist(),
+        "val_indices": val_df.index.tolist(),
+        "test_indices": test_df.index.tolist()
+    }
+
+    timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")    
+
+    json_path = SPLITTER_JSONS / f"split_{timestamp}"
+
+    with open(json_path, "w") as f:
+        json.dump(split_info, f, indent=4)
+
+    return json_path
 
 def split_data(
       data: pd.DataFrame
@@ -8,6 +32,7 @@ def split_data(
     , seed: int
     , test_size=0.2
     , val_size=0.15
+    , save_split=True
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Wrapper method around sklearn's train test split for ease of use
@@ -28,23 +53,8 @@ def split_data(
         , random_state=seed
     )  # Create train and validation set
 
+    if save_split:
+        path = save_split_info(train_df, test_df, val_df)
+        build_updater.write_to(path)
+
     return train_df, val_df, test_df
-
-# Potentially deprecated
-#
-# def smart_resize_img(
-#       image: Any
-#     , model: str 
-#     ):
-#     """Performs image resizing, based on the image size specifications of the model being used."""
-#     from tensorflow.keras.preprocessing.image import smart_resize #type: ignore
-#     from deep.constants import MODEL_IMAGE_SIZE 
-
-#     try:
-#         image_size = MODEL_IMAGE_SIZE[model] 
-#     except KeyError:
-#         raise("Invalid model specification, please state the correct model name.")
-    
-#     resized_img = smart_resize(image, image_size[0])  # Resize image
-    
-#     return resized_img

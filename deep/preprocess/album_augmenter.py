@@ -18,7 +18,7 @@ import pandas as pd
 from PIL import Image
 
 # Root package
-from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS, IMAGE_DIR
+from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS
 from deep.utils import build_updater
 
 # Transformations dict
@@ -167,7 +167,7 @@ def generate_oversample_map(
     }
 
     timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")    
-    filename = f"oversample_plan_{timestamp}.json"
+    filename = f"{label}_upsample_plan_{timestamp}.json"
     json_path = Path(UPSAMPLE_JSONS) / filename
 
     plan_with_config = {"config": config, "oversample_plan": plan.to_dict(orient="records")}
@@ -179,7 +179,6 @@ def generate_oversample_map(
     build_updater.write_to(json_path)
 
     return json_path
-
 
 def _apply_transformation(
     img: Image.Image,
@@ -199,13 +198,13 @@ def _apply_transformation(
 def oversample_labels(
     label: str,
     output_name: str,
-    plan: str
+    plan_path: str
 ) -> None:
     """
     Applies oversampling transformations on the dataset based on a generated plan.
     """
 
-    with open(plan, "r") as f:
+    with open(plan_path, "r") as f:
         plan_data = json.load(f)
 
     oversample_plan = plan_data.get("oversample_plan", [])
@@ -234,4 +233,4 @@ def oversample_labels(
     filepath = METADATA_DIR / f"{output_name}.csv"
     df_aug.to_csv(filepath, mode='a', index=False)
 
-    build_updater.write_to(plan)
+    build_updater.write_to(plan_path)

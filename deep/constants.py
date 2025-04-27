@@ -23,12 +23,13 @@ METADATA_FILE = METADATA_DIR / "metadata.csv"
 
 CLEANER_JSONS = METASTORE_DIR / "cleaner_logs"
 UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
+SPLITTER_JSONS = METADATA_DIR / "splitter_logs"
 
 RESULTS_DIR = METASTORE_DIR / "model_results"
 SCORES = ROOT / "models"
 
 SIGNATURE_FILE = METASTORE_DIR / "current_signature.csv"
-SIGNATURE_COLS = ["CLEANER", "UPSAMPLER"]
+SIGNATURE_COLS = ["CLEANER", "UPSAMPLER", "SPLIT"]
 
 # ------------------ Zip Instructions ------------------ #
 ZIP_FILE_INSTRUCTIONS = {
@@ -69,7 +70,8 @@ MOVE_FILE_INSTRUCTIONS = {
 MAKE_DIR_LIST = [
         DATA_DIR, IMAGE_DIR, PROCESSED_DIR, INPUT_DIR,
         RESOURCES_DIR, METASTORE_DIR,
-        METADATA_DIR, CLEANER_JSONS, UPSAMPLE_JSONS, RESULTS_DIR
+        METADATA_DIR, CLEANER_JSONS, UPSAMPLE_JSONS, RESULTS_DIR,
+        SPLITTER_JSONS
     ]
 
 # ------------------ External Resources ------------------ #

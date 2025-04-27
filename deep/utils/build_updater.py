@@ -7,25 +7,23 @@ The file contains a single row and predefined columns.
 import csv
 from pathlib import Path
 from typing import Dict
-from deep.constants import SIGNATURE_FILE, SIGNATURE_COLS, UPSAMPLE_JSONS, CLEANER_JSONS
+from deep.constants import SIGNATURE_FILE, SIGNATURE_COLS, UPSAMPLE_JSONS, CLEANER_JSONS, SPLITTER_JSONS
 
 def write_to(
-      path: str
+      path: Path
     ) -> None:
     """
     Updates the appropriate column ("CLEANER" or "UPSAMPLER") in the CSV 
     with the provided path if it belongs to CLEANER_JSONS or UPSAMPLE_JSONS. 
     Raises ValueError if the path is not recognized.
     """
-    try:
-        path = Path(path)
-    except ValueError:
-        raise("Could not resolve the provided path.")
 
     if path.parent == UPSAMPLE_JSONS:
         col = "UPSAMPLER"
     elif path.parent == CLEANER_JSONS:
         col = "CLEANER"
+    elif path.parent == SPLITTER_JSONS:
+        col = "SPLITER"
     else:
         raise ValueError("Provided str is not in UPSAMPLE_JSONS or CLEANER_JSONS.")
 
