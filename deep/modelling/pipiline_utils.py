@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-import datetime
+from datetime import datetime
 from typing import Tuple
 from deep.constants import SPLITTER_JSONS 
 from deep.utils import build_updater

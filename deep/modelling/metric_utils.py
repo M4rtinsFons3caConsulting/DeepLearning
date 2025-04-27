@@ -106,3 +106,4 @@ def plot_confusion_matrix(y_true, y_pred, labels):
     plt.title('Confusion Matrix')
     plt.tight_layout()
     plt.show()
+    

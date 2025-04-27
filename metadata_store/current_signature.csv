@@ -1,2 +1,2 @@
-CLEANER,UPSAMPLER, RESIZE
-cleaner_config_20250427T072913Z.json,oversample_plan_20250427T075814Z.json
+CLEANER,UPSAMPLER,SPLITTER
+,,/home/nottoriousgg/MsC/DeepLearning/metadata_store/splitter_logs/split_20250427T184959Z

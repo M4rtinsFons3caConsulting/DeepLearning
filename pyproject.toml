@@ -20,7 +20,8 @@ dependencies = [
     "opencv-python",
     "ipykernel",
     "focal-loss",
-    "gdown"
+    "gdown",
+    "nbformat"
 ]
 
 [build-system]

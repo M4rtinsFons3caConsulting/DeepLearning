@@ -1,3 +1,19 @@
+"""
+This script defines the pipeline to train a binary classification model using Keras. 
+The model is built with a customizable configuration, including options for loss function 
+(focal loss or binary cross-entropy), and can handle multiple types of data (original, transformed, or upsampled).
+
+The model is trained using augmented image data and includes a callback for early stopping and reducing the learning rate 
+if the validation loss plateaus. The pipeline also supports saving and updating baseline performance scores, 
+which can be used for tracking model improvements.
+
+Functions:
+    - run_binary_model(file_path: str, data: pd.DataFrame, seed: int, model, loss: str, epochs: int, type: str, model_name: str):
+        Trains and evaluates a binary classification model, with options for image augmentation, upsampling, 
+        and class weighting, while also updating the baseline model performance.
+"""
+
+import os
 import numpy as np
 import pandas as pd
 
@@ -6,7 +22,7 @@ from tensorflow.keras.metrics import AUC
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, smart_resize  # type: ignore
 
-from deep.constants import IMAGE_DIR, BATCH_SIZE, PROCESSED_DIR, METADATA_DIR, MODEL_IMAGE_SIZE
+from deep.constants import INPUT_DIR, BATCH_SIZE, METADATA_DIR, MODEL_IMAGE_SIZE
 from deep.modelling.metric_utils import get_fitted_model_metrics, plot_confusion_matrix, plot_metrics, show_augmented_images
 from deep.modelling.pipiline_utils import split_data
 from deep.preprocess.album_augmenter import compute_effective_class_weights
@@ -22,6 +38,24 @@ def run_binary_model(
     ,type: str
     ,model_name:str
 ):
+    """
+    Runs the training pipeline for a binary classification model, utilizing augmented data and optional upsampling, 
+    while also tracking and updating baseline model performance.
+
+    Args:
+        file_path (str): Path to the file that stores baseline performance data.
+        data (pd.DataFrame): DataFrame containing metadata and file paths for the images.
+        seed (int): Random seed for reproducibility.
+        model: A Keras model to be trained.
+        loss (str): The loss function to use during training ('focal' or 'crossentropy').
+        epochs (int): Number of epochs to train the model.
+        type (str): Type of dataset to use ('original', 'transformed', or 'upsample').
+        model_name (str): The name of the model used (for resizing input images to the correct shape).
+
+    Returns:
+        None: This function trains the model, evaluates it, and updates the baseline performance.
+    """
+    
     import os
     import json
 
@@ -42,18 +76,8 @@ def run_binary_model(
     # Split the data
     train_df, val_df, test_df = split_data(data, 'is_animal', seed)
 
-    if type == 'original':
-        # Set images directory
-        dir = IMAGE_DIR
-
-    elif type == 'transformed':
-        # Set images directory
-        dir = PROCESSED_DIR
-
-    elif type == 'upsample':
-        # Set images directory
-        dir = PROCESSED_DIR
-
+    if type == 'upsampled':
+        
         # Get the upsampled images - cropped and generated
         cropped = pd.read_csv(f'{METADATA_DIR}/cropped_labels.csv')
         upsampled = pd.read_csv(f'{METADATA_DIR}/is_animal_upsample_map.csv')
@@ -75,7 +99,7 @@ def run_binary_model(
             ,aux_df2
         ], ignore_index=True
         , axis=0)
-        
+
         # Add the new metadata to train_df
         train_df = pd.concat([
             train_df
@@ -83,7 +107,7 @@ def run_binary_model(
             ,upsampled
         ], ignore_index=True
         , axis=0
-        )
+    )
 
     # Changing target to string
     train_df['is_animal'] = train_df['is_animal'].astype(str)
@@ -98,29 +122,27 @@ def run_binary_model(
         channel_shift_range=30.0,
         zoom_range=(0.8, 1.2),
         fill_mode='nearest',
-        preprocessing_function=lambda image: smart_resize(image, size=MODEL_IMAGE_SIZE[model_name])
+        rescale=1./255
     )
-    test_datagen = ImageDataGenerator(
-        preprocessing_function=lambda image: smart_resize(image, size=MODEL_IMAGE_SIZE[model_name])
-    )
+    test_datagen = ImageDataGenerator(rescale=1./255)
 
     # Train generator
     binary_train_generator = train_datagen.flow_from_dataframe(
         dataframe=train_df,
-        directory=dir,
+        directory=INPUT_DIR,
         x_col='file_path',
         y_col='is_animal',
         target_size=MODEL_IMAGE_SIZE[model_name],
         batch_size=BATCH_SIZE,
         class_mode='binary',
         seed=seed,
-        shuffle=True  # shuffle for training
+        shuffle=True,
     )
 
     # Validation generator
     binary_val_generator = test_datagen.flow_from_dataframe(
         dataframe=val_df,
-        directory=dir,
+        directory=INPUT_DIR,
         x_col='file_path',
         y_col='is_animal',
         target_size=MODEL_IMAGE_SIZE[model_name],
@@ -132,7 +154,7 @@ def run_binary_model(
     # Test generator
     binary_test_generator = test_datagen.flow_from_dataframe(
         dataframe=test_df,
-        directory=dir,
+        directory=INPUT_DIR,
         x_col='file_path',
         y_col='is_animal',
         target_size=MODEL_IMAGE_SIZE[model_name],
@@ -182,7 +204,7 @@ def run_binary_model(
             EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
             ,ReduceLROnPlateau(patience=2, factor=0.5, verbose=1)
         ]
-        ,verbose=1
+        , verbose=1
     )
 
     # Get best epoch metrics
@@ -207,7 +229,7 @@ def run_binary_model(
 
     else:
         print("Current model not better than baseline")
-
+        
     # # Make predictions
     # predictions = binary_model.predict(
     #     binary_test_generator

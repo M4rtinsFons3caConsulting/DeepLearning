@@ -23,7 +23,7 @@ def write_to(
     elif path.parent == CLEANER_JSONS:
         col = "CLEANER"
     elif path.parent == SPLITTER_JSONS:
-        col = "SPLITER"
+        col = "SPLITTER"
     else:
         raise ValueError("Provided str is not in UPSAMPLE_JSONS or CLEANER_JSONS.")
 
