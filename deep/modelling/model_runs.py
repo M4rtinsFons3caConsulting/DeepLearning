@@ -76,6 +76,9 @@ def run_binary_model(
     # Split the data
     train_df, val_df, test_df = split_data(data, 'is_animal', seed)
 
+    if type not in ['original', 'transformed', 'upsampled']:
+        raise ValueError("Argument type must be one of 'original', 'transformed' or 'upsampled'.")
+
     if type == 'upsampled':
         
         # Get the upsampled images - cropped and generated

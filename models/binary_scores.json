@@ -5,4 +5,5 @@
     "dropout": false
   },
   "loss": "binary_crossentropy",
-  "type": 
+  "type": "original"
+}
