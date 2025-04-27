@@ -49,17 +49,18 @@ def _preprocess_image(image: np.ndarray, config: dict) -> np.ndarray:
 
     return result
 
-
 def save_config(
         config: dict
     ) -> None:
-    log_dir = CLEANER_JSONS
-    log_dir.mkdir(exist_ok=True)
+
     timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")
-    config_path = log_dir / f"config_{timestamp}.json"
+    filename = f"cleaner_config_{timestamp}.json"
+    config_path = CLEANER_JSONS / filename
+
     with open(config_path, "w") as f:
         json.dump(config, f, indent=4)
 
+    return config_path
 
 def clean_directory(config: dict) -> None:
     total, failed = 0, 0
@@ -84,7 +85,8 @@ def clean_directory(config: dict) -> None:
             failed += 1
 
     print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")
-    save_config(config)
+    
+    output_path = save_config(config)
 
     # Update the build
     build_updater.write_to(output_path)

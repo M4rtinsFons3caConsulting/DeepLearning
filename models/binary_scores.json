@@ -1,9 +1,0 @@
-{
-  "score": 0.9449213147163391,
-  "model": {
-    "regularizer": false,
-    "dropout": false
-  },
-  "loss": "binary_crossentropy",
-  "type": "transformed"
-}

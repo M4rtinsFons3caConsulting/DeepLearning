@@ -24,7 +24,7 @@ CLEANER_JSONS = METASTORE_DIR / "cleaner_logs"
 UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
 RESULTS_DIR = METASTORE_DIR / "model_results"
 
-SIGNATURE_FILE = METADATA_DIR / "current_signature.csv"
+SIGNATURE_FILE = METASTORE_DIR / "current_signature.csv"
 SIGNATURE_COLS = ["CLEANER", "UPSAMPLER"]
 
 # ------------------ Zip Instructions ------------------ #

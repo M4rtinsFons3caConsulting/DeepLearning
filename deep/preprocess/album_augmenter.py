@@ -12,37 +12,70 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 # 3rd party
+import cv2
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ( # type: ignore
-    ImageDataGenerator,
-    img_to_array,
-    array_to_img,
-    load_img,
-)
+from PIL import Image
 
 # Root package
 from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS, IMAGE_DIR
 from deep.utils import build_updater
 
-# Transformations dict for ImageGenerator
-TRANSFORM_GENERATORS: Dict[str, ImageDataGenerator] = {
-    "flip_lr": ImageDataGenerator(horizontal_flip=True),
-    "bright_plus": ImageDataGenerator(preprocessing_function=lambda x: x * 1.10),
-    "bright_minus": ImageDataGenerator(preprocessing_function=lambda x: x * 0.90),
-    "sat_plus": ImageDataGenerator(preprocessing_function=lambda x: tf.image.adjust_saturation(x, 1.10)),
-    "sat_minus": ImageDataGenerator(preprocessing_function=lambda x: tf.image.adjust_saturation(x, 0.90)),
-    "zoom_in": ImageDataGenerator(zoom_range=[1.0, 1.2]),
-    "zoom_out": ImageDataGenerator(zoom_range=[0.8, 1.0]),
-    "shift": ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1),
-    "rotate_15": ImageDataGenerator(rotation_range=15),
-    "rotate_30": ImageDataGenerator(rotation_range=30),
-    "rotate_45": ImageDataGenerator(rotation_range=45),
-    "rotate_60": ImageDataGenerator(rotation_range=60),
-    "rotate_90": ImageDataGenerator(rotation_range=90),
+# Transformations dict
+TRANSFORM_GENERATORS: Dict[str, Any] = {
+    "rotate_30": lambda x: cv2.warpAffine(
+        x,
+        cv2.getRotationMatrix2D((x.shape[1] // 2, x.shape[0] // 2), 30, 1),
+        (x.shape[1], x.shape[0])
+    ),
+    "sat_plus": lambda x: cv2.cvtColor(
+        cv2.convertScaleAbs(cv2.cvtColor(x, cv2.COLOR_BGR2HSV), alpha=1.0, beta=25),
+        cv2.COLOR_HSV2BGR
+    ),
+    "flip_lr": lambda x: cv2.flip(
+        x, 1
+    ),
+    "bright_plus": lambda x: np.clip(
+        x.astype(np.float32) * 3.0, 0, 255
+    ).astype(np.uint8),
+    "rotate_45": lambda x: cv2.warpAffine(
+        x,
+        cv2.getRotationMatrix2D((x.shape[1] // 2, x.shape[0] // 2), 45, 1),
+        (x.shape[1], x.shape[0])
+    ),
+    "rotate_15": lambda x: cv2.warpAffine(
+        x,
+        cv2.getRotationMatrix2D((x.shape[1] // 2, x.shape[0] // 2), 15, 1),
+        (x.shape[1], x.shape[0])
+    ),
+    "rotate_60": lambda x: cv2.warpAffine(
+        x,
+        cv2.getRotationMatrix2D((x.shape[1] // 2, x.shape[0] // 2), 60, 1),
+        (x.shape[1], x.shape[0])
+    ),
+    "rotate_90": lambda x: cv2.warpAffine(
+        x,
+        cv2.getRotationMatrix2D((x.shape[1] // 2, x.shape[0] // 2), 90, 1),
+        (x.shape[1], x.shape[0])
+    ),
+    "sat_minus": lambda x: cv2.cvtColor(
+        cv2.convertScaleAbs(cv2.cvtColor(x, cv2.COLOR_BGR2HSV), alpha=1.0, beta=-25),
+        cv2.COLOR_HSV2BGR
+    ),
+     "shift": lambda x: cv2.warpAffine(
+        x,
+        np.float32([[1, 0, x.shape[1] * 0.1], [0, 1, x.shape[0] * 0.1]]),
+        (x.shape[1], x.shape[0])
+    ),
+    "zoom_in": lambda x: cv2.resize(
+        x,
+        (int(x.shape[1] * 1.2), int(x.shape[0] * 1.2))
+    ),
+    "zoom_out": lambda x: cv2.resize(
+        x,
+        (int(x.shape[1] * 1.25), int(x.shape[0] * 1.25))
+    )
 }
-
 
 def compute_effective_class_weights(
     df: pd.DataFrame,
@@ -52,16 +85,8 @@ def compute_effective_class_weights(
 ) -> Dict[str, float]:
     """
     Computes effective class weights based on the class distribution.
-    
-    Args:
-        df (pd.DataFrame): The dataframe containing the data.
-        label_column (str): The label column for computing class weights.
-        beta (float, optional): Beta parameter for effective number calculation. Defaults to 0.999.
-        normalize (bool, optional): Whether to normalize the weights. Defaults to True.
-
-    Returns:
-        Dict[str, float]: A dictionary containing the class weights.
     """
+
     def effective_num(n: int, beta: float) -> float:
         return (1 - beta**n) / (1 - beta)
 
@@ -76,25 +101,16 @@ def compute_effective_class_weights(
 
     return class_weights
 
-
 def compute_imbalance_ratio(
     df: pd.DataFrame,
     label_column: str
 ) -> Dict[str, float]:
     """
     Computes the imbalance ratio for each class in the dataset.
-    
-    Args:
-        df (pd.DataFrame): The dataframe containing the data.
-        label_column (str): The label column to compute the imbalance ratio for.
-
-    Returns:
-        Dict[str, float]: A dictionary with the imbalance ratio for each class.
     """
     counts = df[label_column].value_counts()
     max_count = counts.max()
     return {label: max_count / count for label, count in counts.items()}
-
 
 def generate_oversample_map(
     df: pd.DataFrame,
@@ -104,18 +120,8 @@ def generate_oversample_map(
 ) -> List[Dict[str, str]]:
     """
     Generates an oversample plan to balance the class distribution based on a target ratio.
-    Also writes the plan and configuration to a JSON file with a timestamp.
-
-    Args:
-        df (pd.DataFrame): The dataframe containing the data.
-        label (str): The label column to balance.
-        target_ratio (float): The desired target ratio for balancing.
-        min_samples (int): The minimum number of samples per class.
-        config (dict): Configuration dictionary for transformations.
-
-    Returns:
-        List[Dict[str, str]]: A list of oversampling instructions (augmentation plans).
     """
+
     counts = df[label].value_counts()
     max_count = counts.max()
     majority_label = counts.idxmax()
@@ -139,7 +145,6 @@ def generate_oversample_map(
         transform_idx = 0
 
         while needed > 0 and transform_idx < len(transform_keys):
-
             transform_key = transform_keys[transform_idx]
             n_samples = min(needed, len(class_df))
 
@@ -161,57 +166,37 @@ def generate_oversample_map(
         'min_samples': min_samples
     }
 
-    timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")
+    timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")    
+    filename = f"oversample_plan_{timestamp}.json"
+    json_path = Path(UPSAMPLE_JSONS) / filename
+
     plan_with_config = {"config": config, "oversample_plan": plan.to_dict(orient="records")}
-    json_path = Path(UPSAMPLE_JSONS) / f"oversample_plan_{timestamp}.json"
-    
+
     with open(json_path, "w") as f:
         json.dump(plan_with_config, f, indent=4)
-    
-    # Update the build
-    build_updater.write_to(json_path)
-
-    return plan
-
 
 def _apply_transformation(
-        img: Any,
-        transformation_key: str
-) -> Any:
+    img: Image.Image,
+    transformation_key: str
+) -> Image.Image:
     """
     Applies a transformation to an image based on the transformation key.
-
-    Args:
-        img (Any): The image to transform.
-        transformation_key (str): The key to select the transformation from TRANSFORM_GENERATORS.
-
-    Returns:
-        Any: The transformed image.
     """
+
     if transformation_key not in TRANSFORM_GENERATORS:
         raise ValueError(f"Unknown transformation key: {transformation_key}")
 
-    datagen = TRANSFORM_GENERATORS[transformation_key]
-    img_array = img_to_array(img)
-    img_array = img_array.reshape((1,) + img_array.shape)
-    aug_iter = datagen.flow(img_array, batch_size=1)
-    aug_img_array = next(aug_iter)[0].astype(np.uint8)
-
-    return array_to_img(aug_img_array)
-
+    img_array = np.array(img)
+    transformed_array = TRANSFORM_GENERATORS[transformation_key](img_array)
+    return Image.fromarray(transformed_array)
 
 def oversample_labels(
-        label: str,
-        output_name: str,
-        plan: str
+    label: str,
+    output_name: str,
+    plan: str
 ) -> None:
     """
     Applies oversampling transformations on the dataset based on a generated plan.
-
-    Args:
-        label (str): The label column to oversample.
-        output_name (str): The output name for the generated oversampled dataset.
-        plan (str): The path to the oversampling plan (JSON file).
     """
 
     with open(plan, "r") as f:
@@ -226,7 +211,7 @@ def oversample_labels(
         destination = PROCESSED_DIR / filename
 
         try:
-            img = load_img(source)
+            img = Image.open(source).convert("RGB")
             new_img = _apply_transformation(img, entry["transform_key"])
             new_img.save(destination)
 
@@ -241,3 +226,5 @@ def oversample_labels(
     df_aug = pd.DataFrame(augmented_rows)
     filepath = METADATA_DIR / f"{output_name}.csv"
     df_aug.to_csv(filepath, mode='a', index=False)
+
+    build_updater.write_to(plan)
