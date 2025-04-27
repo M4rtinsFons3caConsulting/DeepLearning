@@ -174,6 +174,12 @@ def generate_oversample_map(
 
     with open(json_path, "w") as f:
         json.dump(plan_with_config, f, indent=4)
+    
+    # Update the build
+    build_updater.write_to(json_path)
+
+    return json_path
+
 
 def _apply_transformation(
     img: Image.Image,
@@ -206,7 +212,7 @@ def oversample_labels(
     augmented_rows = []
 
     for entry in oversample_plan:
-        source = IMAGE_DIR / entry["file_path"]
+        source = PROCESSED_DIR / entry["file_path"]
         filename = f"{source.stem}_{entry[label]}_{entry['transform_key']}{source.suffix}"
         destination = PROCESSED_DIR / filename
 
@@ -217,7 +223,8 @@ def oversample_labels(
 
             augmented_rows.append({
                 "rare_species_id": entry['rare_species_id'],
-                "file_path": str(filename)
+                "file_path": str(filename),
+                label: entry[label]
             })
 
         except Exception as e:

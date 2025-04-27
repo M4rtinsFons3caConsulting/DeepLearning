@@ -103,6 +103,6 @@ IMAGENET_NORM = {
 }
 
 # ------------------ Model Run Configuration ------------------ # 
-IMG_SIZE = 224
+IMG_SIZE = 380
 BATCH_SIZE = 64
 SEED = 20

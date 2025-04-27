@@ -45,17 +45,43 @@ def run_binary_model(
     train_df, val_df, test_df = split_data(data, 'is_animal', seed)
 
     if type == 'original':
+        # Set images directory
         dir = IMAGE_DIR
 
     elif type == 'transformed':
+        # Set images directory
         dir = PROCESSED_DIR
 
     elif type == 'upsample':
+        # Set images directory
         dir = PROCESSED_DIR
-        upsampled = pd.read_csv(f'{METADATA_DIR}/cropped_labels.csv')
+
+        # Get the upsampled images - cropped and generated
+        cropped = pd.read_csv(f'{METADATA_DIR}/cropped_labels.csv')
+        upsampled = pd.read_csv(f'{METADATA_DIR}/is_animal_upsample_map.csv')
+
+        # Filter upsample based on the images on the train set
+        # Upsampled images from crops
+        aux_df1 = upsampled[upsampled['file_path'].str.contains('noanimalcrop', na=False)]
+
+        # Upsampled images from train
+        # Exclude the cropped images first
+        temp = upsampled[~upsampled['file_path'].isin(aux_df1['file_path'])]
+
+        # Filter to only rare_species_id in train_df
+        aux_df2 = temp[temp['rare_species_id'].isin(train_df['rare_species_id'])]
+
+        # Create new upsampled dataframe
+        upsampled = pd.concat([
+            aux_df1
+            ,aux_df2
+        ], ignore_index=True
+        , axis=0)
+        
         # Add the new metadata to train_df
         train_df = pd.concat([
             train_df
+            ,cropped
             ,upsampled
         ], ignore_index=True
         , axis=0
@@ -124,6 +150,7 @@ def run_binary_model(
     # Build the model
     binary_model, config = model
 
+    # Define loss function
     if loss == 'focal':
         loss = BinaryFocalLoss(
             gamma=5
