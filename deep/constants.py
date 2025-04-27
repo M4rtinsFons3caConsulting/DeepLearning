@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 IMAGE_DIR = DATA_DIR / "raw_image_directory"
 PROCESSED_DIR = DATA_DIR / "processed_image_directory"
+INPUT_DIR = DATA_DIR / "input_image_directory"
 
 # ------------------ Resources ------------------ #
 RESOURCES_DIR = ROOT / "resources"
@@ -22,7 +23,9 @@ METADATA_FILE = METADATA_DIR / "metadata.csv"
 
 CLEANER_JSONS = METASTORE_DIR / "cleaner_logs"
 UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
+
 RESULTS_DIR = METASTORE_DIR / "model_results"
+SCORES = ROOT / "models"
 
 SIGNATURE_FILE = METASTORE_DIR / "current_signature.csv"
 SIGNATURE_COLS = ["CLEANER", "UPSAMPLER"]
@@ -64,7 +67,7 @@ MOVE_FILE_INSTRUCTIONS = {
 
 # ------------------ Make Dir Tree ------------------ #
 MAKE_DIR_LIST = [
-        DATA_DIR, IMAGE_DIR, PROCESSED_DIR,
+        DATA_DIR, IMAGE_DIR, PROCESSED_DIR, INPUT_DIR,
         RESOURCES_DIR, METASTORE_DIR,
         METADATA_DIR, CLEANER_JSONS, UPSAMPLE_JSONS, RESULTS_DIR
     ]
@@ -103,6 +106,17 @@ IMAGENET_NORM = {
 }
 
 # ------------------ Model Run Configuration ------------------ # 
-IMG_SIZE = 380
+# Optimal image size values for popular models
+MODEL_IMAGE_SIZE = {
+    "efficientnetb0": (224, 224),
+    "efficientnetb3": (300, 300),
+    "efficientnetb4": (380, 380),
+    "vgg16": (224, 224),
+    "vgg19": (224, 224),
+}
+
+# Random Seeds for reproducibility
+SEEDS = [20,21,22,23,24]
+
+# Adequate batch size 
 BATCH_SIZE = 64
-SEED = 20

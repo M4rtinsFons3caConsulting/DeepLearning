@@ -1,9 +1,21 @@
-from deep.constants import DATA_DIR, IMAGE_DIR, IMG_SIZE, BATCH_SIZE, SEED
-from tensorflow.keras.applications.efficientnet import EfficientNetB4, preprocess_input
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Input, BatchNormalization, Dropout, Lambda, GlobalMaxPooling2D, Concatenate
-from tensorflow.keras import regularizers
-
+from tensorflow.keras import regularizers #type: ignore
+from tensorflow.keras.models import Model #type: ignore
+from tensorflow.keras.layers import (
+    Dense, 
+    GlobalAveragePooling2D, 
+    Input, 
+    BatchNormalization, 
+    Dropout, 
+    Lambda, 
+    GlobalMaxPooling2D, 
+    Concatenate
+)
+from tensorflow.keras.applications.efficientnet import ( #type: ignore
+    EfficientNetB0,
+    EfficientNetB4, 
+    preprocess_input
+)
+from deep.constants import MODEL_IMAGE_SIZE
 
 def efficient_net(
     regularizer: bool = False
@@ -15,7 +27,7 @@ def efficient_net(
         ,'dropout': dropout
     }
     # Set the input
-    input_tensor = Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+    input_tensor = Input(shape=(*MODEL_IMAGE_SIZE["efficientnetb4"], 3))
     # Apply preprocessing to the input tensor
     x = Lambda(preprocess_input)(input_tensor)
 

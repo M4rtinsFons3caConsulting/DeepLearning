@@ -12,7 +12,7 @@ def _preprocess_image(image: np.ndarray, config: dict) -> np.ndarray:
         result = cv2.medianBlur(result, 3)
 
     if config.get("gaussian_blur", False):
-        result = cv2.GaussianBlur(result, (5, 5), 0)
+        result = cv2.GaussianBlur(result, (3, 3), 0)
 
     if config.get("bilateral", False):
         result = cv2.bilateralFilter(result, d=9, sigmaColor=75, sigmaSpace=75)
@@ -29,7 +29,7 @@ def _preprocess_image(image: np.ndarray, config: dict) -> np.ndarray:
     if config.get("clahe", False):
         ycrcb = cv2.cvtColor(result, cv2.COLOR_RGB2YCrCb)
         y, cr, cb = cv2.split(ycrcb)
-        clahe = cv2.createCLAHE(clipLimit=1.05, tileGridSize=(3, 3))
+        clahe = cv2.createCLAHE(clipLimit=2.00, tileGridSize=(3, 3))
         y_eq = clahe.apply(y)
         result = cv2.cvtColor(cv2.merge((y_eq, cr, cb)), cv2.COLOR_YCrCb2RGB)
 
@@ -79,7 +79,7 @@ def clean_directory(config: dict) -> None:
             processed = _preprocess_image(img, config)
             output_path = PROCESSED_DIR / img_path.name
             cv2.imwrite(str(output_path), processed)
-            print(f"Saved to: {output_path.name}")
+        
         except Exception as e:
             print(f"Error processing {img_path.name}: {e}")
             failed += 1

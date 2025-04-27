@@ -1,15 +1,3 @@
-from deep.constants import IMG_SIZE, SEED
-
-
-def split_data(data, label, seed):
-    from sklearn.model_selection import train_test_split
-
-    # Performing the splits
-    train_df, test_df = train_test_split(data, test_size=0.2, stratify=data[label], random_state=seed)  # Create test set
-    train_df, val_df = train_test_split(train_df, test_size=0.15, stratify=train_df[label], random_state=seed)  # Create train and validation set
-
-    return train_df, val_df, test_df
-
 
 def show_augmented_images(generator, num_images=8):
     import matplotlib.pyplot as plt
@@ -30,17 +18,6 @@ def show_augmented_images(generator, num_images=8):
 
     plt.tight_layout()
     plt.show()
-
-
-def smart_resize_img(image, target_size=(IMG_SIZE, IMG_SIZE)):
-    from tensorflow.keras.preprocessing.image import smart_resize
-
-    resized_img = smart_resize(image, target_size)  # Resize image
-    resized_img /= 255.0  # Normalize the image
-    
-    return resized_img
-
-
 
 def get_fitted_model_metrics(model):
     import numpy as np
@@ -89,7 +66,6 @@ def plot_metrics(model):
     )
     plt.title("Training and Validation Precision")
     plt.legend()
-
     plt.figure()
 
     # Loss plot
@@ -107,7 +83,6 @@ def plot_metrics(model):
     )
     plt.title("Training and Validation Loss")
     plt.legend()
-
     plt.show()
 
 
