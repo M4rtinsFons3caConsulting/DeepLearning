@@ -14,6 +14,7 @@ Functions:
 """
 
 import os
+import json
 import numpy as np
 import pandas as pd
 
@@ -55,9 +56,6 @@ def run_binary_model(
     Returns:
         None: This function trains the model, evaluates it, and updates the baseline performance.
     """
-    
-    import os
-    import json
 
     # Load baseline
     if os.path.exists(file_path):

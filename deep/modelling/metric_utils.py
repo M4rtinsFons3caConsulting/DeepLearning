@@ -31,58 +31,58 @@ def get_fitted_model_metrics(model):
     best_train_loss = history['loss'][best_epoch]
     best_val_loss = history['val_loss'][best_epoch]
     print(f"Train Loss: {best_train_loss}\nValidation Loss: {best_val_loss}")
+    
     # Precision
     best_train_pre = history['precision'][best_epoch]
     best_val_pre = history['val_precision'][best_epoch]
     print(f"Train Precision:{best_train_pre}\nValidation Precision: {best_val_pre}")
 
+     # Alternatively, to get precision per class
+    if 'precision' in history and isinstance(history['precision'], list):
+        for i, class_precision in enumerate(history['precision'][best_epoch]):
+            print(f"Class {i} Precision: {class_precision}")
+
     return best_val_pre
 
-
-def plot_metrics(model):
+def plot_metrics(model, binary=False):
     import matplotlib.pyplot as plt
 
     history = model.history
 
-    # Defining the variables
-    pre = history['precision']
-    val_pre = history['val_precision']
+    # Defining the variables (multiclass)
+    precision = history['precision']
+    val_precision = history['val_precision']
     loss = history['loss']
     val_loss = history['val_loss']
-    epochs = range(1, len(pre) + 1)
 
-    # Recall plot
-    plt.plot(
-        epochs
-        ,pre
-        ,'bo'
-        ,label='Training Precision'
-    )
-    plt.plot(
-        epochs
-        ,val_pre
-        ,'b'
-        ,label='Validation Precision'
-    )
+    if not binary:
+        accuracy = history['accuracy']
+        val_accuracy = history['val_accuracy']
+
+    epochs = range(1, len(precision) + 1)
+
+    # Precision Plot
+    plt.plot(epochs, precision, 'bo', label='Training Precision')
+    plt.plot(epochs, val_precision, 'b', label='Validation Precision')
     plt.title("Training and Validation Precision")
     plt.legend()
     plt.figure()
 
-    # Loss plot
-    plt.plot(
-        epochs
-        ,loss
-        ,'bo'
-        ,label='Training Loss'
-    )
-    plt.plot(
-        epochs
-        ,val_loss
-        ,'b'
-        ,label='Validation Loss'
-    )
+    if not binary:
+        # Accuracy Plot
+        plt.plot(epochs, accuracy, 'bo', label='Training Accuracy')
+        plt.plot(epochs, val_accuracy, 'b', label='Validation Accuracy')
+        plt.title("Training and Validation Accuracy")
+        plt.legend()
+        plt.figure()
+
+    # Loss Plot
+    plt.plot(epochs, loss, 'bo', label='Training Loss')
+    plt.plot(epochs, val_loss, 'b', label='Validation Loss')
     plt.title("Training and Validation Loss")
     plt.legend()
+
+    # Show the plots
     plt.show()
 
 
