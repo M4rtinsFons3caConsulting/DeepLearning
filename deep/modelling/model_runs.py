@@ -83,7 +83,7 @@ def run_binary_model(
         
         # Get the upsampled images - cropped and generated
         cropped = pd.read_csv(f'{METADATA_DIR}/cropped_labels.csv')
-        upsampled = pd.read_csv(f'{METADATA_DIR}/is_animal_upsample_map.csv')
+        upsampled = pd.read_csv(f'{METADATA_DIR}/is_animal_upsample.csv')
 
         # Filter upsample based on the images on the train set
         # Upsampled images from crops
@@ -109,8 +109,7 @@ def run_binary_model(
             ,cropped
             ,upsampled
         ], ignore_index=True
-        , axis=0
-    )
+        , axis=0)
 
     # Changing target to string
     train_df['is_animal'] = train_df['is_animal'].astype(str)
@@ -139,7 +138,7 @@ def run_binary_model(
         batch_size=BATCH_SIZE,
         class_mode='binary',
         seed=seed,
-        shuffle=True,
+        shuffle=True
     )
 
     # Validation generator
