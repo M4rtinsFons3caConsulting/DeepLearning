@@ -26,7 +26,8 @@ UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
 SPLITTER_JSONS = METASTORE_DIR / "splitter_logs"
 
 RESULTS_DIR = METASTORE_DIR / "model_results"
-SCORES = ROOT / "models"
+MODELS = ROOT / "models"
+MODEL_CONFIGS = MODELS / "config_logs"
 
 SIGNATURE_FILE = METASTORE_DIR / "current_signature.csv"
 SIGNATURE_COLS = ["CLEANER", "UPSAMPLER", "SPLITTER"]
