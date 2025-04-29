@@ -37,7 +37,7 @@ def get_fitted_model_metrics(model):
     best_val_pre = history['val_precision'][best_epoch]
     print(f"Train Precision:{best_train_pre}\nValidation Precision: {best_val_pre}")
 
-     # Alternatively, to get precision per class
+    # Alternatively, to get precision per class
     if 'precision' in history and isinstance(history['precision'], list):
         for i, class_precision in enumerate(history['precision'][best_epoch]):
             print(f"Class {i} Precision: {class_precision}")

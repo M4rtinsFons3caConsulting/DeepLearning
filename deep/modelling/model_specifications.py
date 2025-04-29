@@ -33,7 +33,7 @@ from tensorflow.keras.layers import (
     Concatenate, BatchNormalization, Dropout
 )
 from tensorflow.keras.models import Model # type: ignore
-from tensorflow.keras.applications import EfficientNetB4 # type: ignore
+from tensorflow.keras.applications.efficientnet import EfficientNetB4, preprocess_input # type: ignore
 from deep.constants import MODEL_IMAGE_SIZE
 
 def efficient_net(
@@ -67,7 +67,7 @@ def efficient_net(
     input_tensor = Input(shape=(*MODEL_IMAGE_SIZE["efficientnetb4"], 3))
     
     # Apply preprocessing to the input tensor
-    x = Lambda(EfficientNetB4.preprocess_input)(input_tensor)
+    x = Lambda(preprocess_input)(input_tensor)
 
     # Load the pre-trained model
     base_model = EfficientNetB4(include_top=False, weights='imagenet', input_tensor=x)
