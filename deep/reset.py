@@ -11,7 +11,9 @@ from pathlib import Path
 from deep.constants import PROCESSED_DIR, IMAGE_DIR, INPUT_DIR
 from deep.utils import build_updater
 
-def reset_dir(dir: str):
+def reset_dir(
+    dir: str
+) -> None:
     """Eliminates a specified directory and re-creates it in an empty state.
 
     Args:
@@ -43,7 +45,8 @@ def reset_dir(dir: str):
     else:
         print(f"{dir} is not a valid directory or doesn't exist.")
 
-def main():
+def main(
+) -> None:
     """Main function to parse arguments and call the reset_dir function.
 
     The script expects a directory name as an argument ('original', 'processed', or 'input').

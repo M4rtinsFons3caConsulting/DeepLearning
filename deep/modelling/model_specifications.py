@@ -30,7 +30,7 @@ Functions:
 from tensorflow.keras import regularizers # type: ignore
 from tensorflow.keras.layers import (
     Input, Lambda, Dense, GlobalAveragePooling2D, GlobalMaxPooling2D, 
-    Concatenate, BatchNormalization, Dropout
+    Concatenate, BatchNormalization, Dropout, Activation
 )
 from tensorflow.keras.models import Model # type: ignore
 from tensorflow.keras.applications.efficientnet import EfficientNetB4, preprocess_input # type: ignore
@@ -178,9 +178,8 @@ def efficient_net_extended(
     return model, config
 
 
-def efficient_net_multilabel(
-    num_family_classes: int = 5,   
-    num_phylum_classes: int = 10, 
+def efficient_net_deep(
+    num_classes: int = 1,  
     regularizer: bool = False,
     dropout: bool = False,
     task_type: str = 'multilabel' 
@@ -225,23 +224,18 @@ def efficient_net_multilabel(
     gmp = GlobalMaxPooling2D()(base_model.output)
     x = Concatenate()([gap, gmp])
     
-    # Add regularization
-    x = Dense(128, kernel_regularizer=regularizers.l2(0.001), activation='relu')(x)
+    # Dense Layers
+    for units in [256, 128, 64]:
+        x = Dense(units, use_bias=False)(x)
+        x = BatchNormalization()(x)
+        x = Activation('relu')(x)
+        if dropout:
+            x = Dropout(0.1)(x)
 
-    x = BatchNormalization()(x)
-    x = Dropout(0.5)(x)
-    x = Dense(64, activation='relu')(x)
-
-    # Primary output for 'is_animal' (binary classification)
-    is_animal_output = Dense(1, activation='sigmoid', name='is_animal')(x)
+    # Output for 'family' (multi-class classification)
+    output = Dense(num_classes, activation='softmax', name='family')(x)
     
-    # Auxiliary output for 'family' (multi-class classification)
-    family_output = Dense(num_family_classes, activation='softmax', name='family')(x)
-    
-    # Auxiliary output for 'phylum' (multi-class classification)
-    phylum_output = Dense(num_phylum_classes, activation='softmax', name='phylum')(x)
-
     # Define the model with the three outputs
-    model = Model(inputs=input_tensor, outputs=[is_animal_output, family_output, phylum_output])
+    model = Model(inputs=input_tensor, outputs=output)
 
     return model, config

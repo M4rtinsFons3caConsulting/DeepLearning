@@ -36,7 +36,7 @@ SIGNATURE_COLS = ["CLEANER", "UPSAMPLER", "SPLITTER"]
 # ------------------ Results ------------------ #
 MODELS = ROOT / "models"
 RESULTS_DIR = MODELS / "model_results"
-MODEL_ARC = MODELS / "model_arquitectures"
+MODEL_CONFIGS = MODELS / "model_arquitectures"
 
 MODEL_DICT = [
     "base_model",
