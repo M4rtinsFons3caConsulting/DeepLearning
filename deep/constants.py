@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+#################### DIRECTORY TREE ####################
+
 # ------------------ Root ------------------ #
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -25,12 +27,23 @@ CLEANER_JSONS = METASTORE_DIR / "cleaner_logs"
 UPSAMPLE_JSONS = METASTORE_DIR / "upsample_logs"
 SPLITTER_JSONS = METASTORE_DIR / "splitter_logs"
 
-RESULTS_DIR = METASTORE_DIR / "model_results"
-MODELS = ROOT / "models"
-MODEL_CONFIGS = MODELS / "config_logs"
+BINARY_UPSAMPLE = RESOURCES_DIR / "binary_upsample_map.json"
+FAMILY_UPSAMPLE = RESOURCES_DIR / "family_upsample_map.json"
 
 SIGNATURE_FILE = METASTORE_DIR / "current_signature.csv"
 SIGNATURE_COLS = ["CLEANER", "UPSAMPLER", "SPLITTER"]
+
+# ------------------ Results ------------------ #
+MODELS = ROOT / "models"
+RESULTS_DIR = MODELS / "model_results"
+MODEL_ARC = MODELS / "model_arquitectures"
+
+MODEL_DICT = [
+    "base_model",
+    "extended_model",
+    "binary_model",
+    "multilabel_model"
+]
 
 # ------------------ Zip Instructions ------------------ #
 ZIP_FILE_INSTRUCTIONS = {
@@ -50,6 +63,8 @@ ZIP_FILE_INSTRUCTIONS = {
         False
     )
 }
+
+####################  DIRECTORY MANIPULATIONS #################### 
 
 # ------------------ Move Instructions ------------------ #
 MOVE_FILE_INSTRUCTIONS = {
@@ -71,18 +86,16 @@ MOVE_FILE_INSTRUCTIONS = {
 MAKE_DIR_LIST = [
         DATA_DIR, IMAGE_DIR, PROCESSED_DIR, INPUT_DIR,
         RESOURCES_DIR, METASTORE_DIR, METADATA_DIR,
-        CLEANER_JSONS, UPSAMPLE_JSONS, RESULTS_DIR, 
-        SPLITTER_JSONS
+        CLEANER_JSONS, UPSAMPLE_JSONS, SPLITTER_JSONS,
+        RESULTS_DIR, MODELS, MODEL_CONFIGS 
+        
     ]
 
-# ------------------ External Resources ------------------ #
-DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4PetkQo6OIL0mUL1pFsTD"
+#################### HELPER CONSTANTS ####################
 
-# Upsampling mappings
-BINARY_UPSAMPLE = RESOURCES_DIR / "binary_upsample_map.json"
-FAMILY_UPSAMPLE = RESOURCES_DIR / "family_upsample_map.json"
+# ------------------ REGGEX Patterns ------------------ #
 
-# Precompiled regex patterns used for filename recognition or filtering
+# Precompiled regex patterns used for filename recognition and filtering in augmentation tasks
 REGEX_REF = {
     'crop': re.compile(r'crop'),
     'flip_lr': re.compile(r'_flip_lr'),
@@ -102,6 +115,7 @@ REGEX_REF = {
 }
 
 # ------------------ Normalization Constants ------------------ #
+
 # ImageNet normalization in OpenCV BGR order
 IMAGENET_NORM = {
     "mean": [0.406, 0.456, 0.485],
@@ -109,6 +123,7 @@ IMAGENET_NORM = {
 }
 
 # ------------------ Model Run Configuration ------------------ # 
+
 # Optimal image size values for popular models
 MODEL_IMAGE_SIZE = {
     "efficientnetb0": (224, 224),
@@ -121,5 +136,18 @@ MODEL_IMAGE_SIZE = {
 # Random Seeds for reproducibility
 SEEDS = [20,21,22,23,24]
 
-# Adequate batch size 
+# A batch size found to work accross our hardwares 
 BATCH_SIZE = 32
+
+####################  EXTERNAL RESOURCES #################### 
+
+# ------------------ DATA DRIVE  ------------------ #
+
+# Download request link for the data used for this project.
+DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4PetkQo6OIL0mUL1pFsTD"
+
+# ------------------ MODEL DRIVE  ------------------ #
+
+# Download requests for our model weights, hosted at our Google Drive
+BASE_MODEL = "https://drive.google.com/uc?export=download&id=1g-z6CPV4E_xcJGPGq1bSEEhOe523qBTL"
+

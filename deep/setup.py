@@ -1,15 +1,15 @@
-""" 
-Setup.py
-
-This script as its name implies sets up the environment and data for the developer and tester.
-It automatically fetches the data from the provided source, wrangles into `flow_from_dataframe`
-compliance. 
-
-Enriches the original metadata labels with binary images, adds hard negatives sourced from actual
-image backgrounds,cleans the entire dataset using standard image treating protocol, and performs 
-moderate oversampling using augmentation techniques.
-
 """
+setup.py
+
+This script sets up the environment and prepares the dataset for development and testing.
+It automatically fetches the data from the provided sources and wrangles it into 
+`flow_from_dataframe` compliance.
+
+The script enriches the original metadata with binary labels for animal presence, 
+adds hard negatives sourced from background images, cleans the dataset using standard 
+image preprocessing protocols, and performs moderate oversampling through augmentation techniques.
+"""
+
 
 from deep.wrangle import drive_loader, directory_maker, resource_unpacker, directory_formatter 
 

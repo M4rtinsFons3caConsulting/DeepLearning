@@ -1,7 +1,22 @@
-@inproceedings{stevens2024bioclip,
-      title = {{B}io{CLIP}: A Vision Foundation Model for the Tree of Life}, 
-      author = {Samuel Stevens and Jiaman Wu and Matthew J Thompson and Elizabeth G Campolongo and Chan Hee Song and David Edward Carlyn and Li Dong and Wasila M Dahdul and Charles Stewart and Tanya Berger-Wolf and Wei-Lun Chao and Yu Su},
-      booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-      year = {2024},
-      pages = {19412-19424}
-    }
+Citation - Project Data:
+  Stevens, S., Wu, J., Thompson, M. J., Campolongo, E. G., Song, C. H., Carlyn, D. E., Dong, L., Dahdul, W. M., Stewart, C., Berger-Wolf, T., Chao, W.-L., & Su, Y. (2024). 
+  BioCLIP: A vision foundation model for the tree of life. 
+  In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (pp. 19412–19424). IEEE.
+
+Citation - Focal Loss:
+  Lin, T.-Y., Goyal, P., Girshick, R. B., He, K., & Dollar, P. (2017). 
+  Focal loss for dense object detection. 
+  In *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 2980–2988. 
+  DOI: https://doi.org/10.1109/ICCV.2017.324
+
+Citation - Effectice Number of Samples:
+  Cui, Y., Jia, M., Lin, T.-Y., Song, Y., & Belongie, S. (2019). 
+  Class-balanced loss based on effective number of samples. 
+  In *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 9268–9277. 
+  DOI: https://doi.org/10.1109/CVPR.2019.00949
+
+Citation - Class Imbalance:
+  Buda, M., Maki, A., & Mazurowski, M. A. (2018). 
+  A systematic study of the class imbalance problem in convolutional neural networks. 
+  Neural Networks, 106, 249–259. 
+  DOI: https://doi.org/10.1016/j.neunet.2018.07.011

@@ -1,5 +1,5 @@
 """
-crop_labeller.py
+label_cropper.py
 
 This script handles interactive image labeling for machine learning tasks.
 It supports binary classification and random cropping-based tasks.
@@ -7,7 +7,7 @@ Labels are saved incrementally to a CSV file, and the process can resume
 from where it left off.
 
 Usage:
-    python crop_labeller.py --task binary --output labels
+    python label_cropper.py --task binary --output labels
 """
 
 # Imports

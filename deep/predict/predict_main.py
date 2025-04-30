@@ -1,9 +1,26 @@
+"""
+predict_from_directory.py - this script handles the main pipeline for prediction operations.
+
+It validates the contents of a given directory, then applies the same preprocessing routine applied to our test
+dataset. It then allows for the loading of different models that once loaded, iterate over the images in the provided 
+directory outputing predictions to a CSV file.
+
+The model predictions csv is stored as `<model_name>_<model_timestamp>_predictions.csv` in `model/model_results`, it is
+important to mention that this directory also stores the prediction CSV of our best models.
+"""
+
 import os
 import numpy as np
 import pandas as pd
 from PIL import Image
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image # type: ignore
+from tensorflow.keras.models import load_model # type: ignore
+
+def load_model(
+           
+):
+    """Loads a keras model in .h5 format"""
+    load_model()
 
 # --- Config ---
 INPUT_DIR = "path/to/predict_dir"

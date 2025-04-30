@@ -38,20 +38,20 @@ def split_data(
     Wrapper method around sklearn's train test split for ease of use
     """
     from sklearn.model_selection import train_test_split
-    # Performing the splits
+
     train_df, test_df = train_test_split(
         data
         , test_size=test_size
         , stratify=data[label]
         , random_state=seed
-    )  # Create test set
+    ) 
     
     train_df, val_df = train_test_split(
         train_df
         , test_size=val_size
         , stratify=train_df[label]
         , random_state=seed
-    )  # Create train and validation set
+    )
 
     if save_split:
         path = save_split_info(train_df, test_df, val_df)

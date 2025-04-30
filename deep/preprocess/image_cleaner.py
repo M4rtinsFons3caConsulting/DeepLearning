@@ -1,3 +1,23 @@
+"""
+image_cleaner.py - A tool for cleaning and preprocessing image datasets.
+
+This script is designed to generate a cleaned directory of image samples by applying various 
+image preprocessing techniques. It can be used as a standalone tool or is integrated 
+within the `cleaner_routine.ipynb` for more seamless use within a Jupyter notebook environment.
+
+The module works alongside `reset.py` and `regex_delete.py` to provide a comprehensive 
+framework for programmatically manipulating and organizing raw image data, allowing for 
+easy cleaning of large image directories. 
+
+Key functionalities include:
+- Applying transformations such as blurring, normalization, and resizing.
+- Generating and saving configuration files for reproducible data preprocessing steps.
+- Processing image directories by iterating through and cleaning images in batch.
+
+This tool was found to be particularly useful for preparing datasets for model training, ensuring that 
+images are clean and consistent before further processing or model ingestion.
+"""
+
 import cv2
 import json
 import numpy as np
@@ -6,6 +26,19 @@ from deep.constants import IMAGE_DIR, PROCESSED_DIR, IMAGENET_NORM, CLEANER_JSON
 from deep.utils import build_updater
 
 def _preprocess_image(image: np.ndarray, config: dict) -> np.ndarray:
+    """
+    Preprocesses an image based on the given configuration.
+
+    Applies image transformations like blurring, equalization, and normalization as specified in the config.
+
+    Args:
+        image (np.ndarray): The input image to process.
+        config (dict): The preprocessing options (e.g., 'median_blur', 'gamma_correction').
+
+    Returns:
+        np.ndarray: The processed image.
+    """
+
     result = image.copy()
 
     if config.get("median_blur", False):
@@ -49,9 +82,16 @@ def _preprocess_image(image: np.ndarray, config: dict) -> np.ndarray:
 
     return result
 
-def save_config(
-        config: dict
-    ) -> None:
+def save_config(config: dict) -> None:
+    """
+    Saves the preprocessing configuration to a timestamped JSON file.
+
+    Args:
+        config (dict): The configuration to save.
+
+    Returns:
+        Path: Path to the saved configuration file.
+    """
 
     timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")
     filename = f"cleaner_config_{timestamp}.json"
@@ -60,9 +100,19 @@ def save_config(
     with open(config_path, "w") as f:
         json.dump(config, f, indent=4)
 
-    return config_path
+    build_updater.write_to(config_path)
+    
 
 def clean_directory(config: dict) -> None:
+    """
+    Processes all images in IMAGE_DIR and saves the results to PROCESSED_DIR.
+
+    Applies the specified preprocessing steps and saves the processed images.
+
+    Args:
+        config (dict): The preprocessing configuration to apply.
+    """
+
     total, failed = 0, 0
     print(f"Starting preprocessing from: {IMAGE_DIR} → {PROCESSED_DIR}")
 
@@ -86,7 +136,6 @@ def clean_directory(config: dict) -> None:
 
     print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")
     
-    output_path = save_config(config)
+    save_config(config)
 
-    # Update the build
-    build_updater.write_to(output_path)
+    

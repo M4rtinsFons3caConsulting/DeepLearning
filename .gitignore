@@ -6,3 +6,4 @@ resources/drive_data.zip
 resources/additional_resources
 deep.egg-info/
 data/
+models/weights*

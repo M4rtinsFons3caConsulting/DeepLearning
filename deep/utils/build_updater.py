@@ -1,7 +1,7 @@
 """
-Module for reading and updating a CSV file (SINGATURE_FILE) with paths, 
-which correspond to either the "CLEANER" or "UPSAMPLER" columns.
-The file contains a single row and predefined columns.
+This module manages the current data preprocessing configuration in a user session. It tracks the active cleaning, upsampling, 
+and splitting routines by recording the corresponding JSON filenames in a CSV file. This allows users to verify which data 
+modifications are applied to the current working set.
 """
 
 import csv
@@ -13,9 +13,7 @@ def write_to(
       path: Path
     ) -> None:
     """
-    Updates the appropriate column ("CLEANER" or "UPSAMPLER") in the CSV 
-    with the provided path if it belongs to CLEANER_JSONS or UPSAMPLE_JSONS. 
-    Raises ValueError if the path is not recognized.
+    Updates the appropriate column in the signature CSV.
     """
 
     if path.parent == UPSAMPLE_JSONS:
@@ -36,7 +34,7 @@ def write_to(
     except FileNotFoundError:
         pass
 
-    row[col] = str(path)
+    row[col] = path.name
 
     with open(SIGNATURE_FILE, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=SIGNATURE_COLS)
@@ -46,9 +44,18 @@ def write_to(
 
 def write_from() -> Dict[str, str]:
     """
-    Reads the single row from the CSV file and returns it as a dictionary.
+    Reads from the signature CSV, file into a dictionary.
     """
 
     with open(SIGNATURE_FILE, newline='') as f:
         reader = csv.DictReader(f)
         return next(reader)
+    
+def clean() -> None:
+    """
+    Clears the contents of the signature CSV, preserving only the headers.
+    """
+    
+    with open(SIGNATURE_FILE, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=SIGNATURE_COLS)
+        writer.writeheader()

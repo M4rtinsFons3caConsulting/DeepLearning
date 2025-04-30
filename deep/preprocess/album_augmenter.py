@@ -1,27 +1,35 @@
 """
-os_tools/oversampler.py
+album_augmenter.py - A tool for the application of image augmentation as an oversampling technique.
 
-Module for handling class imbalance through oversampling and data augmentation.
-Supports CLI generation of augmentation plans (maps), programmatic oversampling, and class analysis tools.
+This module allows for the augmentation of images using various transformations to balance the class distribution 
+in a dataset. It generates an oversampling plan which stores information about the planned transformations to be 
+applied to a given image, ensuring reproducibility of augmented images. 
+
+The oversampling process generates transformed versions of minority class samples up to a target ratio or minimum 
+amount of samples.
+
+It is primarily used for creating balanced datasets through augmentation before model training, ensuring the dataset 
+is ready and properly balanced, and saving both the augmented images and associated metadata for further use.
+
+Key functionalities include:
+- Generating an oversample plan based on class distribution.
+- Applying transformations like rotation, flipping, and shifting to augment images.
+- Saving the augmented dataset along with metadata for further processing.
 """
 
-# Built-in and STL
 import json
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 from datetime import datetime
 
-# 3rd party
 import cv2
 import numpy as np
 import pandas as pd
 from PIL import Image
 
-# Root package
 from deep.constants import PROCESSED_DIR, METADATA_DIR, UPSAMPLE_JSONS
 from deep.utils import build_updater
 
-# Transformations dict
 TRANSFORM_GENERATORS: Dict[str, Any] = {
     "rotate_30": lambda x: cv2.warpAffine(
         x,
@@ -84,7 +92,24 @@ def compute_effective_class_weights(
     normalize: bool = True
 ) -> Dict[str, float]:
     """
-    Computes effective class weights based on the class distribution.
+    Computes effective class weights to address class imbalance.
+
+    This function calculates the effective class weights based on the class distribution in the dataset,
+    with the option to normalize the weights.
+
+    Citation:
+    Cui, Y., Jia, M., Lin, T.-Y., Song, Y., & Belongie, S. (2019). Class-balanced loss based on effective number of samples. 
+    In *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 9268–9277. 
+    https://doi.org/10.1109/CVPR.2019.00949
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        label_column (str): Column name containing the labels.
+        beta (float, optional): The beta parameter for calculating effective class weights (default is 0.999).
+        normalize (bool, optional): Whether to normalize the weights (default is True).
+
+    Returns:
+        Dict[str, float]: A dictionary mapping class labels to their effective weights.
     """
 
     def effective_num(n: int, beta: float) -> float:
@@ -107,6 +132,21 @@ def compute_imbalance_ratio(
 ) -> Dict[str, float]:
     """
     Computes the imbalance ratio for each class in the dataset.
+
+    This function calculates the ratio of the largest class count to each class's count to identify 
+    the imbalance ratio for the dataset.
+
+    Citation:
+    Buda, M., Maki, A., & Mazurowski, M. A. (2018). A systematic study of the class imbalance problem in 
+    convolutional neural networks. Neural Networks, 106, 249–259. 
+    https://doi.org/10.1016/j.neunet.2018.07.011
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        label_column (str): Column name containing the labels.
+
+    Returns:
+        Dict[str, float]: A dictionary mapping class labels to their imbalance ratios.
     """
     counts = df[label_column].value_counts()
     max_count = counts.max()
@@ -120,6 +160,18 @@ def generate_oversample_map(
 ) -> List[Dict[str, str]]:
     """
     Generates an oversample plan to balance the class distribution based on a target ratio.
+
+    This function creates an oversample plan that includes transformations to be applied to 
+    the underrepresented classes, ensuring that the dataset achieves the desired class distribution.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        label (str): The target label column for oversampling.
+        target_ratio (float): The desired class distribution ratio.
+        min_samples (int): The minimum number of samples required for oversampling.
+
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries containing oversample details for each class.
     """
 
     counts = df[label].value_counts()
@@ -159,7 +211,6 @@ def generate_oversample_map(
             needed -= n_samples
             transform_idx += 1
 
-    # Write oversample map and config to JSON
     config = {
         'label': label,
         'target_ratio': target_ratio,
@@ -174,9 +225,6 @@ def generate_oversample_map(
 
     with open(json_path, "w") as f:
         json.dump(plan_with_config, f, indent=4)
-    
-    # Update the build
-    build_updater.write_to(json_path)
 
     return json_path
 
@@ -184,8 +232,19 @@ def _apply_transformation(
     img: Image.Image,
     transformation_key: str
 ) -> Image.Image:
+    
     """
     Applies a transformation to an image based on the transformation key.
+
+    This function uses a transformation key to apply the corresponding image transformation from 
+    the TRANSFORM_GENERATORS dictionary.
+
+    Args:
+        img (Image.Image): The input image to be transformed.
+        transformation_key (str): The key identifying the transformation to apply.
+
+    Returns:
+        Image.Image: The transformed image.
     """
 
     if transformation_key not in TRANSFORM_GENERATORS:
@@ -202,6 +261,14 @@ def oversample_labels(
 ) -> None:
     """
     Applies oversampling transformations on the dataset based on a generated plan.
+
+    This function takes the oversample plan generated by `generate_oversample_map`, applies the 
+    specified transformations, and saves the augmented images to the dataset.
+
+    Args:
+        label (str): The label for which oversampling is being applied.
+        output_name (str): The output name for the augmented metadata file.
+        plan_path (str): Path to the JSON file containing the oversample plan.
     """
 
     with open(plan_path, "r") as f:

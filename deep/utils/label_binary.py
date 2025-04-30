@@ -1,15 +1,15 @@
 """
-binary_labeller.py
+label_binary.py
 
 This script handles interactive binary image labeling for machine learning tasks.
-Labels are saved incrementally to a CSV file, and the process can resume 
-from where it left off.
-
+Images are shown to a user, and their choices are incrementally saved to a CSV file,
+allows for resuming from the last line treated.
 
 Usage:
-    python binary_labeller.py --output labels
+    python label_binary.py --output labels
 """
-# Imports
+
+# Standard library
 import os
 import re
 import sys

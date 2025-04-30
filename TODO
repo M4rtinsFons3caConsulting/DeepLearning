@@ -1,18 +1,23 @@
-Models:
-- Raw
-- Transformations
-- Transformations + Augmentations
+TODO - Final Code review checklist:
+    - deep:libary:
+        - setup.py #DONE
+        - constants.py #DONE 
+        - reset.py #DONE
+        - __init__.py # DONE
 
-Layers/Options:
-- Simple
-- Regularization
-- Dropout
-- Regularization + Dropout
+        - utils:module:
+            - __init__.py # DONE
+            - build_updater.py # DONE
+            - delete_regex.py # DONE
+            - label_binary.py # DONE
+            - label_cropper.py # DONE
+            
+        - wrangle:module:
 
-Run each model once:
-  . if worst than previous result -> stop
-  . if better than previous result -> run 4 more times
+TODO - Setup prediction pipeline:
+    tasks
 
-result == 95% Confidence Interval over the 5 runs.
+TODO - Family Model Runs:
+    - Setup and run a Raw DCNN, save the model weights, show training results and make predictions;
+    - 
 
-#FIXME: The README.md's need aditional work.
