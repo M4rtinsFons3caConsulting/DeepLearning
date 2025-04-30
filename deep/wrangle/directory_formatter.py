@@ -71,8 +71,13 @@ def _reshape_metadata() -> None:
         .apply(lambda x: "_".join(x.split("_")[:2]))
         .apply(lambda x: f"{x}.jpg")
     )
+    print("Metadata reshaped")
 
     metaframe.drop(columns=["eol_content_id", "eol_page_id", "kingdom"], inplace=True)
+    metaframe.drop_duplicates(keep="first", inplace=True)
+
+    print("Duplicate values removed")
+    
     metaframe.to_csv(METADATA_FILE, index=False)
 
 def _merge_binary_labels() -> None:
