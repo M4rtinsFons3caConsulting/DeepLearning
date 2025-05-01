@@ -17,15 +17,13 @@ Additionally, this script includes an experimental model, which was trained on o
 but ultimately performed poorly, as was perhaps predictable.
 """
 
-from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout,
-                                     BatchNormalization)
 from tensorflow.keras.models import Model #type:ignore
 from tensorflow.keras import regularizers #type: ignore
 
 from tensorflow.keras import regularizers # type: ignore
 from tensorflow.keras.layers import (
     Input, Lambda, Dense, GlobalAveragePooling2D, GlobalMaxPooling2D, 
-    Concatenate, BatchNormalization, Dropout, Activation
+    Concatenate, BatchNormalization, Dropout, Activation, Flatten, Input, Conv2D, MaxPooling2D
 )
 from tensorflow.keras.models import Model # type: ignore
 from tensorflow.keras.applications.efficientnet import EfficientNetB4, EfficientNetB5, preprocess_input # type: ignore

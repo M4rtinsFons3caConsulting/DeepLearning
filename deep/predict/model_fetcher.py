@@ -12,22 +12,24 @@ import os
 import gdown
 from deep.constants import WEIGHTS_DICT
 
-def fetch_model(
-        model      
-    ) -> str | None:
+def fetch_model(model) -> str | None:
     """
     Attempts to download a model from the linked drive.
 
     Returns:
         str | None: Path to the downloaded file if successful, otherwise None.
     """
+    output_path = os.path.join(os.curdir, f"{model}.h5")
+    
+    if os.path.exists(output_path):
+        print(f"Model already exists at {output_path}, skipping download.")
+        return output_path
+
     try:
         print("Downloading data from Drive...")
-        output_path = os.path.join(os.curdir, f"{model}.h5")
         gdown.download(url=WEIGHTS_DICT[model], output=output_path, quiet=False, fuzzy=True)
         print("Download complete.")
         return output_path
-    
     except Exception as e:
         print(f"Download failed: {e}")
         return None
