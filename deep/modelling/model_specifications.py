@@ -230,3 +230,73 @@ def efficient_net_deep(
     model = Model(inputs=input_tensor, outputs=output)
 
     return model, config
+
+def efficient_net_b5(
+    num_classes: int = 1,   
+    regularizer: bool = False,
+    dropout: bool = False,
+    task_type: str = 'binary'
+):
+    """
+    Builds an EfficientNetB5-based model for classification (binary or multiclass) with optional regularization and dropout.
+
+    Args:
+        num_classes (int): Number of output classes (for multiclass, default is 1 for binary classification).
+        regularizer (bool): If True, applies L2 regularization to the dense layer.
+        dropout (bool): If True, applies 50% dropout after batch normalization.
+        task_type (str): 'binary' for binary classification or 'multiclass' for multiclass classification.
+
+    Returns:
+        Tuple[Model, dict]: A compiled Keras Model instance and a dictionary containing 
+        the configuration used (regularizer, dropout, task_type).
+    """
+    
+    # Save model configuration
+    config = {
+        'regularizer': regularizer,
+        'dropout': dropout,
+        'task_type': task_type
+    }
+
+    # Set the input
+    input_tensor = Input(shape=(*MODEL_IMAGE_SIZE["efficientnetb5"], 3))
+    
+    # Apply preprocessing to the input tensor
+    x = Lambda(preprocess_input)(input_tensor)
+
+    # Load the pre-trained model
+    base_model = EfficientNetB5(include_top=False, weights='imagenet', input_tensor=x)
+    
+    # Freeze layers
+    base_model.trainable = False
+
+    # Add top layers (Global Average + Global Max Pooling)
+    gap = GlobalAveragePooling2D()(base_model.output)
+    gmp = GlobalMaxPooling2D()(base_model.output)
+    x = Concatenate()([gap, gmp])
+    
+    # Add regularization or simple dense layer
+    if regularizer:
+        x = Dense(64, kernel_regularizer=regularizers.l2(0.001), activation='relu')(x)
+    else:
+        x = Dense(64, activation='relu')(x)
+    
+    x = BatchNormalization()(x)
+    
+    if dropout:
+        x = Dropout(0.5)(x)
+
+    x = Dense(64, activation='relu')(x)
+    
+    # Final output layer (sigmoid for binary, softmax for multiclass)
+    if task_type == 'binary':
+        output = Dense(1, activation='sigmoid')(x)  # Binary classification
+    elif task_type == 'multiclass':
+        output = Dense(num_classes, activation='softmax')(x)  # Multiclass classification
+    else:
+        raise ValueError("Invalid task_type. Choose 'binary' or 'multiclass'.")
+
+    # Create the model
+    model = Model(inputs=input_tensor, outputs=output)
+
+    return model, config
