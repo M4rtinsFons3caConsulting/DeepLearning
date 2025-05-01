@@ -50,6 +50,7 @@ def show_augmented_images(
 
 def get_fitted_model_metrics(
         model: Model
+        ,is_final: bool = False
     ) -> float:
     """
     Retrieves the best epoch metrics (train/validation loss and precision) from a fitted model.
@@ -66,19 +67,29 @@ def get_fitted_model_metrics(
     history = model.history
 
     # Get best epoch metrics
-    best_epoch = np.argmin(history['val_loss'])
+    if is_final:
+        best_epoch = np.argmin(history['loss'])
+    
+    else:
+        best_epoch = np.argmin(history['val_loss'])
 
     # Loss
     best_train_loss = history['loss'][best_epoch]
-    best_val_loss = history['val_loss'][best_epoch]
-    print(f"Train Loss: {best_train_loss}\nValidation Loss: {best_val_loss}")
+    print(f"Train Loss: {best_train_loss}")
+    
+    if not is_final:
+        best_val_loss = history['val_loss'][best_epoch]
+        print(f"Validation Loss: {best_val_loss}")
     
     # Precision
     best_train_pre = history['precision'][best_epoch]
-    best_val_pre = history['val_precision'][best_epoch]
-    print(f"Train Precision:{best_train_pre}\nValidation Precision: {best_val_pre}")
+    print(f"Train Precision:{best_train_pre}")
 
-    return best_val_pre
+    if not is_final:
+        best_val_pre = history['val_precision'][best_epoch]
+        print(f"Validation Precision: {best_val_pre}")
+
+        return best_val_pre
 
 def plot_metrics(
         model: Model, 

@@ -208,10 +208,10 @@ def run_binary_model(
     )
 
     # Get best epoch metrics
-    val_precision = get_fitted_model_metrics(fitted_binary)
+    val_precision = get_fitted_model_metrics(fitted_binary, is_final=False)
 
     # Plot metrics
-    plot_metrics(fitted_binary)
+    plot_metrics(fitted_binary, binary=True)
 
     if baseline_score is None or val_precision > baseline_score:
         baseline_data = {

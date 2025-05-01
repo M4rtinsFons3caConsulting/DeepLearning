@@ -86,16 +86,22 @@ def split_data(
     ) 
     
     # Further split train set into train and validation sets
-    train_df, val_df = train_test_split(
-        train_df
-        , test_size=val_size
-        , stratify=train_df[label]
-        , random_state=seed
-    )
+    if val_size > 0:
+        train_df, val_df = train_test_split(
+            train_df
+            , test_size=val_size
+            , stratify=train_df[label]
+            , random_state=seed
+        )  # Create train and validation set
 
     # Optionally save the split information
     if save_split:
         path = save_split_info(train_df, test_df, val_df)
         build_updater.write_to(path)
 
-    return train_df, val_df, test_df
+    if val_size > 0:
+        return train_df, val_df, test_df
+    
+    else:
+        return train_df, test_df
+    
