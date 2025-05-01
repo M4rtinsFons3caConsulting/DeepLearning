@@ -300,3 +300,71 @@ def efficient_net_b5(
     model = Model(inputs=input_tensor, outputs=output)
 
     return model, config
+
+from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout,
+                                     BatchNormalization)
+from tensorflow.keras.models import Model
+from tensorflow.keras import regularizers
+
+def small_vgg_model(
+    num_classes: int = 1,
+    regularizer: bool = False,
+    dropout: bool = False,
+    task_type: str = 'binary'
+):
+    """
+    Builds a smaller VGG-style CNN for binary or multiclass classification with optional regularization and dropout.
+
+    Args:
+        num_classes (int): Number of output classes. Default is 1 (binary).
+        regularizer (bool): If True, applies L2 regularization.
+        dropout (bool): If True, applies 50% dropout.
+        task_type (str): 'binary' or 'multiclass'.
+
+    Returns:
+        Tuple[Model, dict]: Compiled Keras model and config dictionary.
+    """
+
+    config = {
+        'regularizer': regularizer,
+        'dropout': dropout,
+        'task_type': task_type
+    }
+    input_tensor = Input(shape=(*MODEL_IMAGE_SIZE["vgg16"], 3))
+
+    x = Conv2D(32, (3, 3), activation='relu', padding='same')(input_tensor)
+    x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+    x = MaxPooling2D((2, 2))(x)
+
+    x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+    x = MaxPooling2D((2, 2))(x)
+
+    x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
+    x = MaxPooling2D((2, 2))(x)
+
+    x = Flatten()(x)
+
+    if regularizer:
+        x = Dense(64, kernel_regularizer=regularizers.l2(0.001), activation='relu')(x)
+    else:
+        x = Dense(64, activation='relu')(x)
+
+    x = BatchNormalization()(x)
+
+    if dropout:
+        x = Dropout(0.5)(x)
+
+    x = Dense(64, activation='relu')(x)
+
+    if task_type == 'binary':
+        output = Dense(1, activation='sigmoid')(x)
+    elif task_type == 'multiclass':
+        output = Dense(num_classes, activation='softmax')(x)
+    else:
+        raise ValueError("Invalid task_type. Choose 'binary' or 'multiclass'.")
+
+    model = Model(inputs=input_tensor, outputs=output)
+
+    return model, config
