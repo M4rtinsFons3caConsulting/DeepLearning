@@ -39,6 +39,7 @@ images are clean and consistent before further processing or model ingestion.
 import cv2
 import json
 import numpy as np
+from pathlib import Path
 from datetime import datetime
 from deep.constants import IMAGE_DIR, PROCESSED_DIR, IMAGENET_NORM, CLEANER_JSONS
 from deep.utils import build_updater
@@ -155,3 +156,44 @@ def clean_directory(config: dict) -> None:
     print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")
     
     save_config(config)
+
+
+def clean_test_directory(config_path: Path, input_dir: Path, output_dir: Path) -> None:
+    """
+    Applies preprocessing to all .jpg images in `input_dir` using a config loaded from a JSON file.
+
+    Args:
+        config_path (Path): Path to a JSON config inside CLEANER_LOGS.
+        input_dir (Path): Directory containing images to process.
+        output_dir (Path): Directory where processed images will be saved.
+    """
+    if config_path.parent != CLEANER_JSONS:
+        raise ValueError(f"Config file must be a valid cleaner config sourced from {CLEANER_JSONS}")
+
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    total, failed = 0, 0
+    print(f"Starting test preprocessing from: {input_dir} - Output: {output_dir}")
+
+    for img_path in input_dir.glob("*.jpg"):
+        total += 1
+        print(f"Processing: {img_path.name}")
+        img = cv2.imread(str(img_path))
+        if img is None:
+            print(f"Failed to load image: {img_path.name}")
+            failed += 1
+            continue
+
+        try:
+            processed = _preprocess_image(img, config)
+            output_path = output_dir / img_path.name
+            cv2.imwrite(str(output_path), processed)
+
+        except Exception as e:
+            print(f"Error processing {img_path.name}: {e}")
+            failed += 1
+
+    print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")

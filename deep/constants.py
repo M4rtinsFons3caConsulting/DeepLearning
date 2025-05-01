@@ -38,12 +38,15 @@ MODELS = ROOT / "models"
 RESULTS_DIR = MODELS / "model_results"
 MODEL_CONFIGS = MODELS / "model_arquitectures"
 
-MODEL_DICT = [
-    "base_model",
-    "extended_model",
-    "binary_model",
-    "multilabel_model"
-]
+MODEL_DICT = {
+    "BASE_MODEL_00": "efficientnetb4", 
+    "BASE_MODEL_00a": "efficientnetb4", 
+    "EXPANDED_MODEL_01": "efficientnetb4",
+    "EXPANDED_MODEL_01a": "efficientnetb4",
+    "DEEP_MODEL_03" : "efficientnetb4",
+    "DEEP_MODEL_03a" : "efficientnetb4",
+    # "B5_MODEL" : "efficientnetb5" 
+}
 
 # ------------------ Zip Instructions ------------------ #
 ZIP_FILE_INSTRUCTIONS = {
@@ -150,5 +153,11 @@ DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4Pet
 # ------------------ MODEL DRIVE  ------------------ #
 
 # Download requests for our model weights, hosted at our Google Drive
-BASE_MODEL = "https://drive.google.com/uc?export=download&id=1g-z6CPV4E_xcJGPGq1bSEEhOe523qBTL"
-
+WEIGHTS_DICT = {
+    "BASE_MODEL_00" : "https://drive.google.com/uc?export=download&id=1g-z6CPV4E_xcJGPGq1bSEEhOe523qBTL",
+    "BASE_MODEL_00a" : "",
+    "EXPANDED_MODEL_01" : "https://drive.google.com/uc?export=download&id=1XILBUGZ99C1fg3KtEUMal16DWWkF9T9B",
+    "EXPANDED_MODEL_01a" : "",
+    "DEEP_MODEL_03" : "",
+    "DEEP_MODEL_03a" : ""
+}

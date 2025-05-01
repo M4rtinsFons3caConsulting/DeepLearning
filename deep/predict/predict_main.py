@@ -1,39 +1,20 @@
 """
-predict_from_directory.py - this script handles the main pipeline for prediction operations.
+predict_images.py - Batch prediction utility for images using a pre-trained Keras model.
 
-It validates the contents of a given directory, then applies the same preprocessing routine applied to our test
-dataset. It then allows for the loading of different models that once loaded, iterate over the images in the provided 
-directory outputing predictions to a CSV file.
-
-The model predictions csv is stored as `<model_name>_<model_timestamp>_predictions.csv` in `model/model_results`, it is
-important to mention that this directory also stores the prediction CSV of our best models.
+This script validates images from a directory, loads a pre-trained model, processes the images,
+performs predictions, and saves the results to a CSV file.
 """
 
 import os
 import numpy as np
 import pandas as pd
 from PIL import Image
-from tensorflow.keras.preprocessing import image # type: ignore
-from tensorflow.keras.models import load_model # type: ignore
+from typing import List, Tuple
+from tensorflow.keras.preprocessing import image  # type: ignore
+from tensorflow.keras.models import load_model as keras_load_model  # type: ignore
 
-def load_model(
-           
-):
-    """Loads a keras model in .h5 format"""
-    load_model()
-
-# --- Config ---
-INPUT_DIR = "path/to/predict_dir"
-MODEL_PATH = "path/to/model.h5"
-OUTPUT_PATH = "predictions.csv"
-TARGET_SIZE = (224, 224)  # replace with your model input size
-
-# --- Validate directory ---
-if not os.path.isdir(INPUT_DIR) or not os.listdir(INPUT_DIR):
-    raise ValueError("Invalid or empty prediction directory.")
-
-# --- Validate images ---
-def is_valid_image(file_path):
+def is_valid_image(file_path: str) -> bool:
+    """Check if a file is a valid image."""
     try:
         with Image.open(file_path) as img:
             img.verify()
@@ -41,53 +22,61 @@ def is_valid_image(file_path):
     except:
         return False
 
-image_paths = [
-    os.path.join(INPUT_DIR, fname)
-    for fname in os.listdir(INPUT_DIR)
-    if is_valid_image(os.path.join(INPUT_DIR, fname))
-]
+def load_valid_image_paths(directory: str) -> List[str]:
+    """Load and return valid image file paths from a directory."""
+    return [
+        os.path.join(directory, fname)
+        for fname in os.listdir(directory)
+        if is_valid_image(os.path.join(directory, fname))
+    ]
 
-# --- Load model ---
-model = load_model(MODEL_PATH)
-
-# --- Preprocess and predict ---
-def preprocess_image(img_path, target_size):
+def preprocess_image(img_path: str, target_size: Tuple[int, int]) -> np.ndarray:
+    """Load and preprocess an image for model prediction."""
     img = image.load_img(img_path, target_size=target_size)
     img_array = image.img_to_array(img) / 255.0
     return np.expand_dims(img_array, axis=0)
 
-results = []
-for path in image_paths:
-    img = preprocess_image(path, TARGET_SIZE)
-    pred = model.predict(img)[0][0]  # adjust indexing if needed
-    results.append((os.path.basename(path), pred))
 
-# --- Save results ---
-df = pd.DataFrame(results, columns=["filename", "prediction"])
-df.to_csv(OUTPUT_PATH, index=False)
+def predict_batch(model_path: str, image_paths: List[str], target_size: Tuple[int, int]) -> pd.DataFrame:
+    """Run predictions on a batch of images."""
+    model = keras_load_model(model_path)
+    results = []
 
+    for path in image_paths:
+        img = preprocess_image(path, target_size)
+        pred = model.predict(img)[0]
+        results.append((os.path.basename(path), *pred))
+        
+    num_classes = len(results[0]) - 1
+    columns = ["filename"] + [f"class_{i}" for i in range(num_classes)]
+    return pd.DataFrame(results, columns=columns)
 
+def predict_images_from_dir(
+    model_path: str,
+    input_dir: str,
+    target_size: Tuple[int, int]
+) -> pd.DataFrame:
+    """
+    Run predictions on all valid images in a directory.
 
+    Args:
+        model_path: Path to a Keras .h5 model file.
+        input_dir: Directory containing input images.
+        target_size: Size (height, width) expected by the model.
 
-    # # Make predictions
-    # predictions = binary_model.predict(
-    #     binary_test_generator
-    #     ,steps=len(binary_test_generator)
-    #     ,verbose=1
-    # )
+    Returns:
+        A pandas DataFrame with filenames and class probabilities.
+    """
+    model = keras_load_model(model_path)
+    image_paths = load_valid_image_paths(input_dir)
+    results = []
 
-    # # Get the true labels
-    # y_true = binary_test_generator.labels
+    for path in image_paths:
+        img = preprocess_image(path, target_size)
+        pred = model.predict(img)[0]
+        results.append((os.path.basename(path), *pred))
 
-    # # Convert predictions to class labels
-    # y_pred = (predictions > 0.5).astype(int).flatten()
+    num_classes = len(results[0]) - 1
+    columns = ["filename"] + [f"class_{i}" for i in range(num_classes)]
 
-    # # Calculate metrics
-    # print(f"Accuracy: {accuracy_score(y_true, y_pred):.4f}")
-    # print(f"Precision: {precision_score(y_true, y_pred):.4f}")
-    # print(f"Recall: {recall_score(y_true, y_pred):.4f}")
-
-    # # Plot confusion matrix
-    # plot_confusion_matrix(y_true, y_pred, data['is_animal'].unique())
-
-    # return precision, config
+    return pd.DataFrame(results, columns=columns)

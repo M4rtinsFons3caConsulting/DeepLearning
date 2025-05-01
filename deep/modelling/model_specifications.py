@@ -17,6 +17,10 @@ Additionally, this script includes an experimental model, which was trained on o
 but ultimately performed poorly, as was perhaps predictable.
 """
 
+from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout,
+                                     BatchNormalization)
+from tensorflow.keras.models import Model #type:ignore
+from tensorflow.keras import regularizers #type: ignore
 
 from tensorflow.keras import regularizers # type: ignore
 from tensorflow.keras.layers import (
@@ -300,11 +304,6 @@ def efficient_net_b5(
     model = Model(inputs=input_tensor, outputs=output)
 
     return model, config
-
-from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout,
-                                     BatchNormalization)
-from tensorflow.keras.models import Model
-from tensorflow.keras import regularizers
 
 def small_vgg_model(
     num_classes: int = 1,
