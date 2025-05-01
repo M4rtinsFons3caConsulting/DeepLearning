@@ -40,12 +40,10 @@ MODEL_CONFIGS = MODELS / "model_arquitectures"
 
 MODEL_DICT = {
     "BASE_MODEL_00": "efficientnetb4", 
-    "BASE_MODEL_00a": "efficientnetb4", 
     "EXPANDED_MODEL_01": "efficientnetb4",
-    "EXPANDED_MODEL_01a": "efficientnetb4",
     "DEEP_MODEL_03" : "efficientnetb4",
-    "DEEP_MODEL_03a" : "efficientnetb4",
-    # "B5_MODEL" : "efficientnetb5" 
+    "TOY_MODEL_00b" : "vgg16"
+    
 }
 
 # ------------------ Zip Instructions ------------------ #
@@ -156,9 +154,8 @@ DRIVE_ZIP_URL = "https://drive.google.com/uc?export=download&id=1PyxqW_nsORX4Pet
 # Download requests for our model weights, hosted at our Google Drive
 WEIGHTS_DICT = {
     "BASE_MODEL_00" : "https://drive.google.com/uc?export=download&id=1g-z6CPV4E_xcJGPGq1bSEEhOe523qBTL",
-    "BASE_MODEL_00a" : "",
-    "EXPANDED_MODEL_01" : "https://drive.google.com/uc?export=download&id=1XILBUGZ99C1fg3KtEUMal16DWWkF9T9B",
-    "EXPANDED_MODEL_01a" : "",
-    "DEEP_MODEL_03" : "",
-    "DEEP_MODEL_03a" : ""
+    "EXPANDED_MODEL_01" : "https://drive.google.com/uc?export=download&id=1Jcjw1_QOZrkMtXP40FLtu28IjUFUAnIu",
+    "DEEP_MODEL_03" : "https://drive.google.com/uc?export=download&id=1XILBUGZ99C1fg3KtEUMal16DWWkF9T9B",
+    "TOY_MODEL_00b" : "https://drive.google.com/uc?export=download&id=1BDSaSkWIWrHupilNImY9xswzCBA7-XTQ"
+    
 }
