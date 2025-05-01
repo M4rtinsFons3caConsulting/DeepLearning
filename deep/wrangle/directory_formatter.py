@@ -1,12 +1,14 @@
 """
-Moves images to relative root of image directory.
+directory_formatter.py — Flattens and reshapes the image directory and metadata 
+to conform with `flow_from_dataframe` requirements used in Keras.
 
-Originally, data was stored in a hierarchy:
-    /<image_directory>/<family_fillum>/<eol_content_id>_<eol_page_id>.jpg
+Overview:
+    - Flattens nested image folders into a single directory.
+    - Cleans and renames image files to ensure uniqueness and consistency.
+    - Updates metadata CSV to reflect the new flat structure.
+    - Merges binary labels into the metadata for downstream binary classification tasks.
 
-It resided in this project’s `/data` directory with other metadata and labelings.
-Due to a shift to multiple model architectures and varied labeling schemas,
-the structure was flattened to support the `flow_from_dataframe` paradigm.
+This script is intended to be run once after initial dataset download and before model training.
 """
 
 import os
@@ -16,8 +18,8 @@ from deep.constants import IMAGE_DIR, METADATA_FILE, REGEX_REF, BINLBL_FILE
 
 def _flatten_image_directory() -> None:
     """
-    Moves all .jpg images from subdirectories to the root of `IMAGE_DIR`, 
-    flattening the folder structure. Assumes all filenames are unique.
+    Flattens the nested structure in IMAGE_DIR by moving all .jpg images
+    from subdirectories to the root. Assumes filenames are unique.
     """
     for subdir, _, files in os.walk(IMAGE_DIR):
         if subdir == IMAGE_DIR:
@@ -32,8 +34,8 @@ def _flatten_image_directory() -> None:
 
 def _delete_empty_subdirs() -> None:
     """
-    Deletes all empty subdirectories inside `IMAGE_DIR`. 
-    If any subdirectory contains files or folders, raises a warning.
+    Removes all empty subdirectories from IMAGE_DIR. 
+    If non-empty folders are found, a warning is raised and deletion is aborted.
     """
     for subdir, subdirs, files in os.walk(IMAGE_DIR, topdown=False):
         if os.path.abspath(subdir) == os.path.abspath(IMAGE_DIR):
@@ -45,8 +47,8 @@ def _delete_empty_subdirs() -> None:
 
 def _rename_images() -> None:
     """
-    Renames .jpg images in `IMAGE_DIR` by trimming everything after the 
-    second underscore. Skips files matching '_noanimalcrop'.
+    Renames .jpg images in IMAGE_DIR by retaining only the first two underscore-separated tokens.
+    Skips files containing the 'crop' pattern as defined in REGEX_REF.
     """
     for file in os.listdir(IMAGE_DIR):
         if file.lower().endswith(".jpg"):
@@ -60,9 +62,11 @@ def _rename_images() -> None:
                 os.rename(old_path, new_path)
                 print(f"Renamed: {file} → {os.path.basename(new_path)}")
 
-
 def _reshape_metadata() -> None:
-    """Updates `metadata.csv` to support a flat directory structure."""
+    """
+    Updates metadata.csv to reflect the new flat directory structure.
+    Cleans path columns, removes unused metadata, and drops duplicates.
+    """
     metaframe = pd.read_csv(METADATA_FILE)
 
     metaframe["file_path"] = (
@@ -81,7 +85,10 @@ def _reshape_metadata() -> None:
     metaframe.to_csv(METADATA_FILE, index=False)
 
 def _merge_binary_labels() -> None:
-    """Merges binary labels with the reshaped metadata."""
+    """
+    Merges binary classification labels from BINLBL_FILE into the reshaped metadata.
+    Ensures the 'is_animal' column is stored as integer type.
+    """
     metaframe = pd.read_csv(METADATA_FILE)
     labelframe = pd.read_csv(BINLBL_FILE)
     labelframe["is_animal"] = labelframe["is_animal"].astype("Int64")
@@ -96,6 +103,15 @@ def _merge_binary_labels() -> None:
     merged.to_csv(METADATA_FILE, index=False)
 
 def format_structure() -> None:
+    """
+    Orchestrates the full directory restructuring pipeline:
+        1. Flattens the image directory
+        2. Deletes leftover subdirectories
+        3. Renames image files
+        4. Updates metadata file paths
+        5. Merges binary labels
+    """
+    
     print("Starting directory reshaping routine...")
 
     print("Step 1 Flattening image directory")

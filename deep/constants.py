@@ -88,7 +88,6 @@ MAKE_DIR_LIST = [
         RESOURCES_DIR, METASTORE_DIR, METADATA_DIR,
         CLEANER_JSONS, UPSAMPLE_JSONS, SPLITTER_JSONS,
         RESULTS_DIR, MODELS, MODEL_CONFIGS 
-        
     ]
 
 #################### HELPER CONSTANTS ####################

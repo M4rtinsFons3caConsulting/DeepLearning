@@ -1,11 +1,40 @@
+"""
+metric_utils.py - Utility functions for visualizing and evaluating models in computer vision tasks.
 
-def show_augmented_images(generator, num_images=8):
-    import matplotlib.pyplot as plt
-    import math
+This module contains several helper functions to assist with common operations like:
+- Visualizing augmented images from an image generator.
+- Extracting and printing model training metrics, including precision and loss.
+- Plotting model training and validation metrics like precision, accuracy, and loss.
+- Visualizing confusion matrices for model evaluation.
 
-    images, labels = next(generator)
+These functions can be used for quick diagnostics and to ensure that a model is training effectively.
+"""
 
-    actual_num = min(num_images, len(images))  # Avoid index errors
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+from tensorflow.keras.preprocessing.image import ImageDataGenerator #type: ignore
+from tensorflow.keras.models import Model #type: ignore
+
+def show_augmented_images(
+        generator: ImageDataGenerator, 
+        num_images: int = 8
+    ) -> None:
+    """
+    Displays a grid of augmented images from a given image generator.
+
+    This function helps in visualizing how images are being augmented by a generator 
+    during training. It shows a specified number of images in a grid format.
+
+    Args:
+        generator (ImageDataGenerator): A generator that yields batches of images and their corresponding labels.
+        num_images (int): The number of images to display from the generated batch (default is 8).
+    """
+    images, _ = next(generator)
+
+    actual_num = min(num_images, len(images))
 
     max_cols = 4
     rows = math.ceil(actual_num / max_cols)
@@ -19,9 +48,21 @@ def show_augmented_images(generator, num_images=8):
     plt.tight_layout()
     plt.show()
 
-def get_fitted_model_metrics(model):
-    import numpy as np
+def get_fitted_model_metrics(
+        model: Model
+    ) -> float:
+    """
+    Retrieves the best epoch metrics (train/validation loss and precision) from a fitted model.
 
+    This function extracts the model's training history and finds the epoch with the best 
+    validation loss. It prints and returns the precision at the best epoch.
+
+    Args:
+        model (Model): The fitted Keras model whose history is being analyzed.
+
+    Returns:
+        float: The best validation precision achieved during training.
+    """
     history = model.history
 
     # Get best epoch metrics
@@ -39,9 +80,21 @@ def get_fitted_model_metrics(model):
 
     return best_val_pre
 
-def plot_metrics(model, binary=False):
-    import matplotlib.pyplot as plt
+def plot_metrics(
+        model: Model, 
+        binary: bool = False
+    ) -> None:
+    """
+    Plots the training and validation metrics such as precision, accuracy, and loss.
 
+    This function generates and displays plots for model training and validation 
+    precision, accuracy, and loss across epochs. It is designed to help visualize 
+    how well a model is training.
+
+    Args:
+        model (Model): The Keras model with training history.
+        binary (bool): Whether the model is a binary classifier. Default is False (multi-class).
+    """
     history = model.history
 
     # Defining the variables (multiclass)
@@ -80,12 +133,25 @@ def plot_metrics(model, binary=False):
     # Show the plots
     plt.show()
 
+def plot_confusion_matrix(
+        y_true: np.ndarray
+        , y_pred: np.ndarray
+        , labels: list
+    ) -> None:
 
-def plot_confusion_matrix(y_true, y_pred, labels):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    from sklearn.metrics import confusion_matrix
+    """
+    Plots a confusion matrix to evaluate the classification performance of the model.
 
+    This function computes the confusion matrix based on the true and predicted labels 
+    and visualizes it as a heatmap. It helps in understanding the performance of a 
+    classification model in terms of false positives, false negatives, and correctly 
+    predicted labels.
+
+    Args:
+        y_true (np.ndarray): The ground truth labels.
+        y_pred (np.ndarray): The predicted labels.
+        labels (list): The list of class labels.
+    """
     # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)
 
@@ -101,4 +167,3 @@ def plot_confusion_matrix(y_true, y_pred, labels):
     plt.title('Confusion Matrix')
     plt.tight_layout()
     plt.show()
-    

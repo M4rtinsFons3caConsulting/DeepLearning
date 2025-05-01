@@ -65,3 +65,29 @@ for path in image_paths:
 # --- Save results ---
 df = pd.DataFrame(results, columns=["filename", "prediction"])
 df.to_csv(OUTPUT_PATH, index=False)
+
+
+
+
+    # # Make predictions
+    # predictions = binary_model.predict(
+    #     binary_test_generator
+    #     ,steps=len(binary_test_generator)
+    #     ,verbose=1
+    # )
+
+    # # Get the true labels
+    # y_true = binary_test_generator.labels
+
+    # # Convert predictions to class labels
+    # y_pred = (predictions > 0.5).astype(int).flatten()
+
+    # # Calculate metrics
+    # print(f"Accuracy: {accuracy_score(y_true, y_pred):.4f}")
+    # print(f"Precision: {precision_score(y_true, y_pred):.4f}")
+    # print(f"Recall: {recall_score(y_true, y_pred):.4f}")
+
+    # # Plot confusion matrix
+    # plot_confusion_matrix(y_true, y_pred, data['is_animal'].unique())
+
+    # return precision, config

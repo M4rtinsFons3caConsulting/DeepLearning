@@ -9,6 +9,24 @@ The module works alongside `reset.py` and `regex_delete.py` to provide a compreh
 framework for programmatically manipulating and organizing raw image data, allowing for 
 easy cleaning of large image directories. 
 
+Although the motivation for these transformations appeared natural, and the suggestions abundant
+when simply browsing the internet, support for the techniques presented below was found in several
+papers of which we mention:
+
+Citation:
+    Ebenezer AS, Kanmani SD, Sivakumar M, Jeba S, Priya. (2022).
+    Effect of image transformation on EfficientNet model for COVID-19 CT image classification.
+    Materials Today: Proceedings, 51, 2512–2519
+
+Citation: 
+    Sadeghi, S., & Ganaie, M. A. (2021). 
+    Comparing convolutional neural networks and preprocessing techniques for HEp-2 cell classification 
+    in immunofluorescence images. 
+    Computers in Biology and Medicine, 138, 104888.
+    
+It must be said, that these also reference the use of these techniques in augmentation, as per the
+course materials.
+
 Key functionalities include:
 - Applying transformations such as blurring, normalization, and resizing.
 - Generating and saving configuration files for reproducible data preprocessing steps.
@@ -114,7 +132,7 @@ def clean_directory(config: dict) -> None:
     """
 
     total, failed = 0, 0
-    print(f"Starting preprocessing from: {IMAGE_DIR} → {PROCESSED_DIR}")
+    print(f"Starting preprocessing from: {IMAGE_DIR} - {PROCESSED_DIR}")
 
     for img_path in IMAGE_DIR.glob("*.jpg"):
         total += 1
@@ -137,5 +155,3 @@ def clean_directory(config: dict) -> None:
     print(f"\nCompleted. Total: {total}, Failed: {failed}, Success: {total - failed}")
     
     save_config(config)
-
-    

@@ -1,5 +1,6 @@
 Citation - Project Data:
-  Stevens, S., Wu, J., Thompson, M. J., Campolongo, E. G., Song, C. H., Carlyn, D. E., Dong, L., Dahdul, W. M., Stewart, C., Berger-Wolf, T., Chao, W.-L., & Su, Y. (2024). 
+  Stevens, S., Wu, J., Thompson, M. J., Campolongo, E. G., Song, C. H., Carlyn, D. E., 
+  Dong, L., Dahdul, W. M., Stewart, C., Berger-Wolf, T., Chao, W.-L., & Su, Y. (2024). 
   BioCLIP: A vision foundation model for the tree of life. 
   In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (pp. 19412–19424). IEEE.
 
@@ -9,7 +10,13 @@ Citation - Focal Loss:
   In *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 2980–2988. 
   DOI: https://doi.org/10.1109/ICCV.2017.324
 
-Citation - Effectice Number of Samples:
+Citation - Categorical Focal Loss 
+  Jaiswal, A., & AbdAlmageed, W. (2021). 
+  Categorical Focal Loss for Multi-class Classification: "An Overview. 
+  arXiv preprint arXiv:2111.05025. 
+  DOI: https://arxiv.org/abs/2111.05025
+
+Citation - Effective Number of Samples:
   Cui, Y., Jia, M., Lin, T.-Y., Song, Y., & Belongie, S. (2019). 
   Class-balanced loss based on effective number of samples. 
   In *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 9268–9277. 
@@ -20,3 +27,29 @@ Citation - Class Imbalance:
   A systematic study of the class imbalance problem in convolutional neural networks. 
   Neural Networks, 106, 249–259. 
   DOI: https://doi.org/10.1016/j.neunet.2018.07.011
+
+Citation - Image Augmentation:
+  Ebenezer AS, Kanmani SD, Sivakumar M, Jeba S, Priya. (2022).
+  Effect of image transformation on EfficientNet model for COVID-19 CT image classification.
+  Materials Today: Proceedings, 51, 2512–2519.
+  DOI: https://doi.org/10.1016/j.matpr.2021.12.121
+
+Citation - Image Cleaning:  
+  Sadeghi, S., & Ganaie, M. A. (2021). 
+  Comparing convolutional neural networks and preprocessing techniques for HEp-2 cell classification 
+  in immunofluorescence images. 
+  Computers in Biology and Medicine, 138, 104888.
+  DOI: https://doi.org/10.1016/j.compbiomed.2019.103542
+
+Citation - Future Work:
+  Cunha, F., dos Santos, E. M., & Colonna, J. G. (2023).
+  Bag of tricks for long-tail visual recognition of animal species in camera-trap images.
+  Ecological Informatics, 75, 102060. 
+  DOI: https://doi.org/10.1016/j.ecoinf.2023.102060.
+
+Citation - Augmentations:
+  Islam, S. B., Valles, D., Hibbitts, T. J., Ryberg, W. A., Walkup, D. K., & Forstner, M. R. J. (2023).
+  Animal species recognition with deep convolutional neural networks from ecological camera trap images. 
+  Animals, 13(9), 1526. 
+  DOI: https://doi.org/10.3390/ani13091526
+

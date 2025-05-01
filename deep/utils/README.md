@@ -14,6 +14,10 @@ This folder contains utility scripts used during the development process.
 - **`delete_regex.py`**  
   Allows batch deletion of images in a directory by matching filenames against a user-specified regex pattern.
 
+- **`build_updater.py`**
+  Utility function that tracks the current treatments applied to a set of images, stored in the 
+  `current_signature.csv`.
+
 ---
 
 These tools were designed for lightweight, manual labeling and cleanup during early-stage development.  
@@ -28,7 +32,8 @@ While more refined, these tools also require additional setup. For this project'
 
 ## Usage
 
-Each script can be executed via the command line. To display help or pass runtime arguments, follow this general pattern:
+Each script, apart from `build_updater.py`, can be executed via the command line. To display help or pass runtime arguments, follow this general pattern:
+
 
 ```bash
 # For Linux

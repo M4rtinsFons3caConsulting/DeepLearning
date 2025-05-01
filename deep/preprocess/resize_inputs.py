@@ -1,4 +1,6 @@
 """
+resize_inputs.py - handles image resizing according to model specs stored in constants.py
+
 This script handles the resizing of all images in a specified directory using
 TensorFlow's smart_resize function. The smart_resize function ensures that images are resized
 without distortion, maintaining the aspect ratio based on the target size defined in the 
@@ -36,7 +38,6 @@ def resize_album(
         file_path = os.path.join(path, filename)
         
         try:
-            # Ensure that the file is an image (could be extended to check file extension)
             if not filename.lower().endswith(('.jpg', '.jpeg', '.png')):
                 print(f"Skipping non-image file: {filename}")
                 continue

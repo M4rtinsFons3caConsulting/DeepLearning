@@ -1,28 +1,56 @@
 """
-This script ingests the data from the google drive where the files have been provided, and validates that both they and 
-the additional resources created for this project exist in their expected location in the resources directory.
+drive_loader.py
 
-This script is intented to be ran as part of the setup process, for more details please consult the package level README.md 
+Handles loading and verification of ZIP data files from both Google Drive and local resources.
 
+This module is used during the setup process to ensure that required datasets and resources are 
+available and correctly located in the project’s resources directory.
+
+Main Features:
+- Downloads a ZIP file from Google Drive if it is not found locally.
+- Validates the presence of essential additional resource files.
+- Aborts with clear errors if required files are missing.
+
+Refer to the package-level README.md for usage instructions.
 """
+
 
 import gdown
 from deep.constants import ZIP_FILE_INSTRUCTIONS, DRIVE_ZIP_URL
 
 def _fetch_zip() -> bool:
+    """
+    Attempts to download the primary ZIP file from Google Drive.
+
+    Returns:
+        bool: True if the download was successful, False otherwise.
+
+    Notes:
+        - Uses gdown to download the file using a shared Drive URL.
+        - Output path is defined in the ZIP_FILE_INSTRUCTIONS constant.
+    """
     try:
         print("Downloading data from Drive...")
         output_path = ZIP_FILE_INSTRUCTIONS['drive_data'][0]
         gdown.download(url=DRIVE_ZIP_URL, output=str(output_path), quiet=False, fuzzy=True)
         print("Download complete.")
         return True
+    
     except Exception as e:
         print(f"Download failed: {e}")
         return False
 
 def load_files() -> None:
     """
-    Manages the ZIP file by checking its checksum and fetching or extracting if necessary.
+    Ensures all required ZIP files are present and valid before proceeding.
+
+    Actions:
+        - Downloads the Drive ZIP file if not already present locally.
+        - Verifies the existence of the additional resources ZIP.
+    
+    Raises:
+        IOError: If the Drive ZIP download fails.
+        FileNotFoundError: If additional resources are missing.
     """
     drive_zip, _, _ = ZIP_FILE_INSTRUCTIONS['drive_data']
     additional_zip, _, _ = ZIP_FILE_INSTRUCTIONS['additional_resources']

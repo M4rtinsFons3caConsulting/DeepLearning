@@ -11,6 +11,25 @@ amount of samples.
 It is primarily used for creating balanced datasets through augmentation before model training, ensuring the dataset 
 is ready and properly balanced, and saving both the augmented images and associated metadata for further use.
 
+Citation:
+    Ebenezer AS, Kanmani SD, Sivakumar M, Jeba S, Priya. (2022).
+    Effect of image transformation on EfficientNet model for COVID-19 CT image classification.
+    Materials Today: Proceedings, 51, 2512–2519
+
+Citation: 
+    Sadeghi, S., & Ganaie, M. A. (2021). 
+    Comparing convolutional neural networks and preprocessing techniques for HEp-2 cell classification 
+    in immunofluorescence images. 
+    Computers in Biology and Medicine, 138, 104888.
+    
+Citation:
+    Islam, S. B., Valles, D., Hibbitts, T. J., Ryberg, W. A., Walkup, D. K., & Forstner, M. R. J. (2023).
+    Animal species recognition with deep convolutional neural networks from ecological camera trap images. 
+    Animals, 13(9), 1526.
+
+It must be said, that these also reference the use of these techniques in cleaner, as per the
+course materials.
+
 Key functionalities include:
 - Generating an oversample plan based on class distribution.
 - Applying transformations like rotation, flipping, and shifting to augment images.

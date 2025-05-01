@@ -18,10 +18,10 @@ import json
 import numpy as np
 import pandas as pd
 
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-from tensorflow.keras.metrics import AUC
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau # type: ignore
+from tensorflow.keras.metrics import AUC # type: ignore
 from tensorflow.keras.optimizers import RMSprop
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, smart_resize  # type: ignore
+from tensorflow.keras.preprocessing.image import ImageDataGenerator  # type: ignore
 
 from deep.constants import INPUT_DIR, BATCH_SIZE, METADATA_DIR, MODEL_IMAGE_SIZE
 from deep.modelling.metric_utils import get_fitted_model_metrics, plot_confusion_matrix, plot_metrics, show_augmented_images
@@ -229,26 +229,4 @@ def run_binary_model(
 
     else:
         print("Current model not better than baseline")
-        
-    # # Make predictions
-    # predictions = binary_model.predict(
-    #     binary_test_generator
-    #     ,steps=len(binary_test_generator)
-    #     ,verbose=1
-    # )
-
-    # # Get the true labels
-    # y_true = binary_test_generator.labels
-
-    # # Convert predictions to class labels
-    # y_pred = (predictions > 0.5).astype(int).flatten()
-
-    # # Calculate metrics
-    # print(f"Accuracy: {accuracy_score(y_true, y_pred):.4f}")
-    # print(f"Precision: {precision_score(y_true, y_pred):.4f}")
-    # print(f"Recall: {recall_score(y_true, y_pred):.4f}")
-
-    # # Plot confusion matrix
-    # plot_confusion_matrix(y_true, y_pred, data['is_animal'].unique())
-
-    # return precision, config
+    

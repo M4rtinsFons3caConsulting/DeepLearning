@@ -1,31 +1,22 @@
 """
-This script defines a customizable EfficientNetB4-based classification model 
-using TensorFlow Keras. The model includes options for L2 regularization and dropout 
-in the fully connected layers after feature extraction.
+model_specifications.py - Contains various model specifications explored during the course of the project.
 
-The EfficientNetB4 model is loaded with pre-trained ImageNet weights and the base 
-layers are frozen during initial training. The top layers consist of a combination 
-of Global Average Pooling and Global Max Pooling outputs, followed by optional 
-regularized and dropout-enabled dense layers, ending in a sigmoid or softmax activation 
-for binary or multiclass classification tasks.
+This script defines a customizable classification model based on EfficientNetB(N) using TensorFlow Keras. 
+The model is designed with options for L2 regularization and dropout in the fully connected layers after 
+feature extraction.
 
-Functions:
-    - efficient_net(num_classes: int = 1, regularizer: bool = False, dropout: bool = False, task_type: str = 'binary'): 
-        Constructs and returns the compiled EfficientNetB4 model and its configuration. 
-        The model can be configured for binary classification or multiclass classification.
-        The `task_type` argument determines whether the model uses a sigmoid activation (binary) 
-        or a softmax activation (multiclass). Regularization and dropout are optional.
+The EfficientNetB(N) model is initialized with pre-trained ImageNet weights, and the base layers are 
+frozen during initial training. The top layers consist of a combination of Global Average Pooling and 
+Global Max Pooling, followed by optional regularized and dropout-enabled dense layers, culminating in a 
+sigmoid or softmax activation for binary or multiclass classification tasks.
 
-    Arguments for `efficient_net`:
-        - num_classes (int): Number of output classes for multiclass classification (1 for binary classification).
-        - regularizer (bool): If True, applies L2 regularization to the dense layer.
-        - dropout (bool): If True, applies 50% dropout after batch normalization.
-        - task_type (str): 'binary' for binary classification (sigmoid activation) or 'multiclass' for multiclass classification (softmax activation).
+Other models were initially explored but were discarded due to poor performance, and are not featured 
+in this script.
 
-    Returns:
-        Tuple[Model, dict]: A compiled Keras Model instance and a dictionary containing 
-        the configuration used (regularizer, dropout, task_type).
+Additionally, this script includes an experimental model, which was trained on our data as a proof of concept, 
+but ultimately performed poorly, as was perhaps predictable.
 """
+
 
 from tensorflow.keras import regularizers # type: ignore
 from tensorflow.keras.layers import (
@@ -33,7 +24,7 @@ from tensorflow.keras.layers import (
     Concatenate, BatchNormalization, Dropout, Activation
 )
 from tensorflow.keras.models import Model # type: ignore
-from tensorflow.keras.applications.efficientnet import EfficientNetB4, preprocess_input # type: ignore
+from tensorflow.keras.applications.efficientnet import EfficientNetB4, EfficientNetB5, preprocess_input # type: ignore
 from deep.constants import MODEL_IMAGE_SIZE
 
 def efficient_net(
