@@ -140,6 +140,7 @@ MODEL_IMAGE_SIZE = {
 SEEDS = [20,21,22,23,24]
 
 # A batch size found to work accross our hardwares 
+BATCH_SIZE_BIG = 64
 BATCH_SIZE = 32
 BATCH_SIZE_SMALL = 12
 
