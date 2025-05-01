@@ -128,6 +128,7 @@ MODEL_IMAGE_SIZE = {
     "efficientnetb0": (224, 224),
     "efficientnetb3": (300, 300),
     "efficientnetb4": (380, 380),
+    "efficientnetb5": (456, 456),
     "vgg16": (224, 224),
     "vgg19": (224, 224),
 }
@@ -137,6 +138,7 @@ SEEDS = [20,21,22,23,24]
 
 # A batch size found to work accross our hardwares 
 BATCH_SIZE = 32
+BATCH_SIZE_SMALL = 12
 
 ####################  EXTERNAL RESOURCES #################### 
 
