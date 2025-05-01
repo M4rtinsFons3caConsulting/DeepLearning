@@ -9,8 +9,7 @@ import os
 import pandas as pd
 from PIL import Image
 from typing import List, Tuple
-from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
-from tensorflow.keras.applications.imagenet_utils import smart_resize # type: ignore
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, smart_resize # type: ignore
 
 def is_valid_image(file_path: str) -> bool:
     """Check if a file is a valid image."""

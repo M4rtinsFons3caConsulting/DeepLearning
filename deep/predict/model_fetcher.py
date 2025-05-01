@@ -10,7 +10,7 @@ the full path to the saved file; otherwise, it returns None.
 
 import os
 import gdown
-from deep.constants import WEIGHTS_DICT
+from deep.constants import WEIGHTS_DICT, MODELS
 
 def fetch_model(model) -> str | None:
     """
@@ -19,7 +19,7 @@ def fetch_model(model) -> str | None:
     Returns:
         str | None: Path to the downloaded file if successful, otherwise None.
     """
-    output_path = os.path.join(os.curdir, f"{model}.weights.h5")
+    output_path = MODELS / f"{model}.weights.h5"
     
     if os.path.exists(output_path):
         print(f"Model already exists at {output_path}, skipping download.")
