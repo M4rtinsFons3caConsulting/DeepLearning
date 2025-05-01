@@ -158,7 +158,7 @@ def clean_directory(config: dict) -> None:
     save_config(config)
 
 
-def clean_test_directory(config_path: Path, input_dir: Path, output_dir: Path) -> None:
+def clean_test_directory(config_path: Path, input_dir: Path) -> None:
     """
     Applies preprocessing to all .jpg images in `input_dir` using a config loaded from a JSON file.
 
@@ -173,10 +173,9 @@ def clean_test_directory(config_path: Path, input_dir: Path, output_dir: Path) -
     with open(config_path, "r") as f:
         config = json.load(f)
 
-    output_dir.mkdir(parents=True, exist_ok=True)
 
     total, failed = 0, 0
-    print(f"Starting test preprocessing from: {input_dir} - Output: {output_dir}")
+    print(f"Starting test preprocessing of: {input_dir}")
 
     for img_path in input_dir.glob("*.jpg"):
         total += 1
@@ -189,7 +188,7 @@ def clean_test_directory(config_path: Path, input_dir: Path, output_dir: Path) -
 
         try:
             processed = _preprocess_image(img, config)
-            output_path = output_dir / img_path.name
+            output_path = input_dir / img_path.name
             cv2.imwrite(str(output_path), processed)
 
         except Exception as e:

@@ -20,16 +20,18 @@ def fetch_model(model) -> str | None:
         str | None: Path to the downloaded file if successful, otherwise None.
     """
     output_path = MODELS / f"{model}.weights.h5"
-    
+
     if os.path.exists(output_path):
         print(f"Model already exists at {output_path}, skipping download.")
-        return output_path
+        return str(output_path)
 
     try:
+        
         print("Downloading data from Drive...")
-        gdown.download(url=WEIGHTS_DICT[model], output=output_path, quiet=False, fuzzy=True)
+        gdown.download(url=WEIGHTS_DICT[model], output=str(output_path), quiet=False, fuzzy=True)
         print("Download complete.")
-        return output_path
+        return str(output_path)
+    
     except Exception as e:
         print(f"Download failed: {e}")
         return None
