@@ -40,7 +40,7 @@ def save_split_info(
 
     timestamp = datetime.now().strftime("%Y%m%dT%H%M%SZ")    
 
-    json_path = SPLITTER_JSONS / f"split_{timestamp}"
+    json_path = SPLITTER_JSONS / f"split_{timestamp}.json"
 
     # Write split info to JSON file
     with open(json_path, "w") as f:

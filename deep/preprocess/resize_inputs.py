@@ -14,17 +14,18 @@ from tensorflow.keras.preprocessing import image as tf_image  # type: ignore
 from deep.constants import MODEL_IMAGE_SIZE, INPUT_DIR
 
 def resize_album(
-    model: str,
-    path: str
-):
+        model: str,
+        path: str
+    ) -> None:
     """
-    Resizes all images in the specified directory to the target size specified for the given model.
+    Resizes all images in the specified directory to the target size specified for the given model, and outputs
+    them to the inputs directory.
 
     This function will loop through all the image files in the provided directory, apply the smart_resize 
     function from TensorFlow to resize the images according to the size defined in the MODEL_IMAGE_SIZE 
     dictionary for the given model. The resized images are saved back to their original file paths, 
     effectively overwriting the original images.
-     """
+    """
     
     size = MODEL_IMAGE_SIZE[model]
 
@@ -57,3 +58,43 @@ def resize_album(
 
         except Exception as e:
             print(f"Error processing {output_path}: {e}")
+
+def resize_test_album(
+        model: str,
+        path: str
+    ) -> None:
+    """
+    Resizes all images in the specified directory to the target size specified for the given model.
+
+    This function resizes images using TensorFlow's smart_resize and saves them back to the original directory,
+    overwriting the originals or saving alongside them.
+    """
+    
+    size = MODEL_IMAGE_SIZE[model]
+
+    try:
+        path = Path(path)
+    except ValueError:
+        raise ValueError("Could not convert the provided string to a valid path.")
+
+    for filename in os.listdir(path):
+        file_path = os.path.join(path, filename)
+        
+        try:
+            if not filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                print(f"Skipping non-image file: {filename}")
+                continue
+
+            img = tf_image.load_img(file_path)  
+            img_array = tf_image.img_to_array(img)
+
+            resized_img = smart_resize(img_array, size)
+
+            # Save back to the same directory instead of INPUT_DIR
+            output_path = os.path.join(path, filename)
+
+            tf_image.save_img(output_path, resized_img)
+
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
+

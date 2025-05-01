@@ -32,7 +32,9 @@ Citation (Categorical Focal Loss):
 
 import tensorflow as tf
 from tensorflow.keras.losses import Loss # type: ignore
+from keras.saving import register_keras_serializable #type: ignore
 
+@register_keras_serializable()
 class CategoricalFocalLoss(Loss):
     """
     Implementation of the Categorical Focal Loss function.
