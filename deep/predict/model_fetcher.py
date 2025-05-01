@@ -19,7 +19,7 @@ def fetch_model(model) -> str | None:
     Returns:
         str | None: Path to the downloaded file if successful, otherwise None.
     """
-    output_path = os.path.join(os.curdir, f"{model}.h5")
+    output_path = os.path.join(os.curdir, f"{model}.weights.h5")
     
     if os.path.exists(output_path):
         print(f"Model already exists at {output_path}, skipping download.")
