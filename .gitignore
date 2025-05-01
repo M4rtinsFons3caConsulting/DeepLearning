@@ -7,3 +7,4 @@ resources/additional_resources
 deep.egg-info/
 data/
 models/weights*
+metadata_store/current_signature.csv
